@@ -1,0 +1,85 @@
+# Multi-stage build for production
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --legacy-peer-deps
+
+COPY . .
+RUN npm run build
+
+# Production PHP container
+FROM php:8.2-fpm-alpine
+
+# Install system dependencies
+RUN apk add --no-cache \
+    nginx \
+    supervisor \
+    mysql-client \
+    postgresql-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    libpng-dev \
+    libxml2-dev \
+    zip \
+    libzip-dev \
+    oniguruma-dev \
+    bash
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl bcmath gd
+
+# Install Redis extension
+RUN apk add --no-cache $PHPIZE_DEPS \
+    && pecl install redis \
+    && docker-php-ext-enable redis
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Create application user
+RUN addgroup -g 1000 -S appuser && \
+    adduser -u 1000 -S appuser -G appuser
+
+# Set working directory
+WORKDIR /var/www
+
+# Copy composer files and install dependencies
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+
+# Copy application code
+COPY --chown=appuser:appuser . .
+
+# Copy built frontend assets from previous stage
+COPY --from=frontend-builder --chown=appuser:appuser /app/public/build ./public/build
+
+# Set permissions
+RUN chown -R appuser:appuser /var/www \
+    && chmod -R 755 /var/www \
+    && chmod -R 775 /var/www/storage \
+    && chmod -R 775 /var/www/bootstrap/cache
+
+# Create production environment file
+RUN cp .env.example .env
+
+# Generate application key and optimize
+RUN php artisan key:generate --force \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+# Switch to non-root user
+USER appuser
+
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD php artisan tinker --execute="echo 'OK';" || exit 1
+
+# Start PHP-FPM
+CMD ["php-fpm"]

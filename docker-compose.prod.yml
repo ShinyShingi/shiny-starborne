@@ -1,0 +1,84 @@
+services:
+  # PHP Application Container (Production)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: shiny-starborne-app-prod
+    restart: always
+    working_dir: /var/www
+    volumes:
+      - ./storage:/var/www/storage
+      - ./bootstrap/cache:/var/www/bootstrap/cache
+      - uploads:/var/www/storage/app/public
+    networks:
+      - shiny-network
+    depends_on:
+      - db
+      - redis
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - LOG_CHANNEL=stderr
+
+  # Nginx Web Server (Production)
+  nginx:
+    image: nginx:alpine
+    container_name: shiny-starborne-nginx-prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./public:/var/www/public:ro
+      - uploads:/var/www/storage/app/public:ro
+      - ./docker/nginx/nginx.prod.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/site.prod.conf:/etc/nginx/conf.d/default.conf
+      # SSL certificates (uncomment when ready)
+      # - ./docker/ssl:/etc/nginx/ssl:ro
+    networks:
+      - shiny-network
+    depends_on:
+      - app
+
+  # MySQL Database (Production)
+  db:
+    image: mysql:8.0
+    container_name: shiny-starborne-db-prod
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data-prod:/var/lib/mysql
+      - ./docker/mysql/my.prod.cnf:/etc/mysql/my.cnf
+    networks:
+      - shiny-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # Redis Cache (Production)
+  redis:
+    image: redis:alpine
+    container_name: shiny-starborne-redis-prod
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data-prod:/data
+    networks:
+      - shiny-network
+
+# Networks
+networks:
+  shiny-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  db-data-prod:
+    driver: local
+  redis-data-prod:
+    driver: local
+  uploads:
+    driver: local

@@ -110,6 +110,14 @@ const { isDarkMode, currentTheme } = useTheme();
                                 severity="success"
                                 outlined
                             />
+                            <Button 
+                                @click="() => $inertia.visit(route('admin.dashboard'))"
+                                icon="pi pi-cog" 
+                                label="Admin Panel" 
+                                class="cosmic-action-btn"
+                                severity="warning"
+                                outlined
+                            />
                         </div>
                     </template>
                 </Card>
