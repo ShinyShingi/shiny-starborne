@@ -1,0 +1,88 @@
+services:
+  # PHP Application Container
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shiny-starborne-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - shiny-network
+    depends_on:
+      - db
+      - redis
+
+  # Nginx Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: shiny-starborne-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/site.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - shiny-network
+    depends_on:
+      - app
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: shiny-starborne-db
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - shiny-network
+
+  # Redis Cache
+  redis:
+    image: redis:alpine
+    container_name: shiny-starborne-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    networks:
+      - shiny-network
+
+  # Node.js for Frontend Build
+  node:
+    image: node:20-alpine
+    container_name: shiny-starborne-node
+    working_dir: /var/www
+    user: "1000:1000"
+    volumes:
+      - ./:/var/www
+      - ./node_modules:/var/www/node_modules
+    networks:
+      - shiny-network
+    command: sh -c "npm install --legacy-peer-deps && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - app
+
+# Networks
+networks:
+  shiny-network:
+    driver: bridge
+
+# Volumes
+volumes:
+  db-data:
+    driver: local

@@ -1,0 +1,44 @@
+# Node modules
+node_modules/
+npm-debug.log*
+
+# Composer
+vendor/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Build files
+public/build/
+public/hot
+
+# Storage and cache
+storage/logs/*.log
+bootstrap/cache/*.php
+
+# Testing
+.phpunit.result.cache
+
+# Docker
+docker-compose.override.yml
