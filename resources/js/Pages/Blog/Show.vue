@@ -266,8 +266,7 @@ const shareOnFacebook = () => {
 
 /* Post Content */
 .content-card {
-    background: rgba(var(--cosmic-bg-card), 0.8);
-    backdrop-filter: blur(10px);
+    /* Styles will come from global v-card rules */
 }
 
 .prose {
@@ -391,16 +390,8 @@ const shareOnFacebook = () => {
     color: rgb(var(--cosmic-text));
 }
 
-.cosmic-gradient-text {
-    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-accent)));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
 
 .related-card {
-    background: rgba(var(--cosmic-bg-card), 0.8);
-    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
     height: 100%;
 }

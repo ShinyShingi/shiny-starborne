@@ -2,19 +2,22 @@
 
 /* Animated Gradient Text */
 .cosmic-gradient-text {
-    background: linear-gradient(270deg, 
-        #ff00ff, 
-        #00ffff, 
-        #ff00ff, 
-        #ffff00, 
-        #ff00ff
+    background: linear-gradient(
+        45deg,
+        #ff6b6b,
+        #4ecdc4,
+        #45b7d1,
+        #96ceb4,
+        #feca57,
+        #ff9ff3,
+        #54a0ff
     );
-    background-size: 400% 400%;
-    -webkit-background-clip: text;
+    background-size: 300% 300%;
     background-clip: text;
+    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: cosmicGradient 8s ease infinite, glow 2s ease-in-out infinite alternate;
-    position: relative;
+    animation: cosmicGradient 3s ease-in-out infinite;
+    display: inline-block;
 }
 
 @keyframes cosmicGradient {

@@ -289,8 +289,6 @@ const selectCategory = (categoryId) => {
 .post-card {
     height: 100%;
     transition: all 0.3s ease;
-    background: rgba(var(--cosmic-bg-card), 0.8);
-    backdrop-filter: blur(10px);
 }
 
 .post-card-link {
@@ -380,13 +378,6 @@ const selectCategory = (categoryId) => {
     margin-top: 3rem;
 }
 
-/* Cosmic Gradient Text */
-.cosmic-gradient-text {
-    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-secondary)));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {

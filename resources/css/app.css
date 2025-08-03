@@ -142,14 +142,180 @@
     }
 }
 
-/* Cosmic Gradient Text */
+/* Cosmic Gradient Text - defined per component to avoid conflicts */
 @layer utilities {
-    .cosmic-gradient-text {
-        @apply bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent;
-    }
-    
     .cosmic-gradient-bg {
         @apply bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500;
+    }
+}
+
+/* Vuetify Component Overrides */
+@layer components {
+    .v-card {
+        background-color: rgb(var(--cosmic-card-bg)) !important;
+        border: 1px solid rgb(var(--cosmic-card-border)) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .dark .v-card {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* Beautiful chip overrides */
+    .v-chip {
+        border-radius: 20px !important;
+        font-weight: 500 !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+        color: rgb(var(--cosmic-text)) !important;
+    }
+    
+    .v-chip:hover {
+        transform: translateY(-1px) scale(1.05) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    /* Outlined chips (default state) */
+    .v-chip.v-chip--variant-outlined {
+        border: 2px solid rgba(var(--cosmic-primary), 0.3) !important;
+        background: rgba(var(--cosmic-card-bg), 0.8) !important;
+        color: rgb(var(--cosmic-text)) !important;
+    }
+    
+    .v-chip.v-chip--variant-outlined:hover {
+        border-color: rgb(var(--cosmic-primary)) !important;
+        background: rgba(var(--cosmic-primary), 0.1) !important;
+        box-shadow: 0 4px 15px rgba(var(--cosmic-primary), 0.2) !important;
+    }
+    
+    /* Elevated/Flat chips (selected state) */
+    .v-chip.v-chip--variant-elevated,
+    .v-chip.v-chip--variant-flat {
+        background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-accent))) !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(var(--cosmic-primary), 0.3) !important;
+    }
+    
+    .v-chip.v-chip--variant-elevated:hover,
+    .v-chip.v-chip--variant-flat:hover {
+        box-shadow: 0 6px 20px rgba(var(--cosmic-primary), 0.4) !important;
+        transform: translateY(-2px) scale(1.05) !important;
+    }
+    
+    /* Category chips special styling */
+    .category-chip.v-chip {
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    .category-chip.v-chip::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+        transition: left 0.5s !important;
+    }
+    
+    .category-chip.v-chip:hover::before {
+        left: 100% !important;
+    }
+    
+    /* Beautiful button overrides */
+    .v-btn {
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        text-transform: none !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .v-btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* Primary button styles */
+    .v-btn.bg-primary,
+    .v-btn[color="primary"] {
+        background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-primary-hover))) !important;
+        color: white !important;
+        border: none !important;
+    }
+    
+    .v-btn.bg-primary:hover,
+    .v-btn[color="primary"]:hover {
+        box-shadow: 0 8px 25px rgba(var(--cosmic-primary), 0.4) !important;
+    }
+    
+    /* Outlined button styles */
+    .v-btn--variant-outlined {
+        border: 2px solid rgb(var(--cosmic-primary)) !important;
+        color: rgb(var(--cosmic-primary)) !important;
+        background: rgba(var(--cosmic-primary), 0.05) !important;
+        backdrop-filter: blur(10px) !important;
+    }
+    
+    .v-btn--variant-outlined:hover {
+        background: rgb(var(--cosmic-primary)) !important;
+        color: white !important;
+    }
+    
+    /* Theme switcher - icon only style */
+    .theme-switcher-btn.v-btn {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        backdrop-filter: none !important;
+    }
+    
+    .theme-switcher-btn.v-btn:hover {
+        background: transparent !important;
+        box-shadow: none !important;
+        transform: none !important;
+    }
+    
+    .theme-switcher-btn.v-btn::before,
+    .theme-switcher-btn.v-btn::after {
+        display: none !important;
+    }
+    
+    /* Remove ripple effect */
+    .theme-switcher-btn.v-btn .v-btn__overlay,
+    .theme-switcher-btn.v-btn .v-ripple__container {
+        display: none !important;
+    }
+    
+    /* Animated icon color transitions */
+    .theme-switcher-btn.v-btn .v-icon {
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        color: rgb(var(--cosmic-text-secondary)) !important;
+    }
+    
+    .theme-switcher-btn.v-btn:hover .v-icon {
+        color: rgb(var(--cosmic-primary)) !important;
+        transform: rotate(15deg) scale(1.1) !important;
+    }
+    
+    /* Different colors for light/dark themes */
+    .theme-switcher-light .v-icon {
+        color: #f59e0b !important; /* sun color */
+    }
+    
+    .theme-switcher-dark .v-icon {
+        color: #60a5fa !important; /* moon color */
+    }
+    
+    .theme-switcher-light:hover .v-icon {
+        color: #f97316 !important; /* brighter sun on hover */
+    }
+    
+    .theme-switcher-dark:hover .v-icon {
+        color: #3b82f6 !important; /* brighter moon on hover */
     }
 }
 
@@ -160,27 +326,7 @@
         @apply bg-cosmic-card-bg border-cosmic-card-border;
     }
     
-    /* Light theme specific override - maximum specificity */
-    html:not(.dark) .p-card.p-card.p-card,
-    body:not(.dark) .p-card.p-card.p-card,
-    .cosmic-layout:not(.cosmic-layout-dark) .p-card.p-card.p-card,
-    :root:not(.dark) .p-card.p-card.p-card {
-        background-color: rgb(var(--cosmic-card-bg)) !important;
-        background: rgb(var(--cosmic-card-bg)) !important;
-        border-color: rgb(var(--cosmic-card-border)) !important;
-        color: rgb(var(--cosmic-text)) !important;
-    }
-    
-    /* Dark theme specific override - maximum specificity */
-    html.dark .p-card.p-card.p-card,
-    body.dark .p-card.p-card.p-card,
-    .cosmic-layout.cosmic-layout-dark .p-card.p-card.p-card,
-    .dark .p-card.p-card.p-card {
-        background-color: rgb(var(--cosmic-card-bg)) !important;
-        background: rgb(var(--cosmic-card-bg)) !important;
-        border-color: rgb(var(--cosmic-card-border)) !important;
-        color: rgb(var(--cosmic-text)) !important;
-    }
+
     
     .p-card .p-card-title {
         @apply text-cosmic-text;

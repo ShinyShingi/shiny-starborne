@@ -260,8 +260,6 @@ const truncateText = (text, length) => {
 .post-card {
     height: 100%;
     transition: all 0.3s ease;
-    background: rgba(var(--cosmic-bg-card), 0.8);
-    backdrop-filter: blur(10px);
 }
 
 .post-card-link {
@@ -329,8 +327,6 @@ const truncateText = (text, length) => {
 /* Category Tiles */
 .category-tile {
     transition: all 0.3s ease;
-    background: rgba(var(--cosmic-bg-card), 0.8);
-    backdrop-filter: blur(10px);
     height: 100%;
 }
 
@@ -369,13 +365,6 @@ const truncateText = (text, length) => {
     font-size: 1.125rem;
 }
 
-/* Cosmic Gradient Text */
-.cosmic-gradient-text {
-    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-secondary)));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
 
 /* Background Section */
 .bg-cosmic-bg-secondary {
