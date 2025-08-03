@@ -5,149 +5,191 @@
         title="Cosmic Blog" 
         background-variant="default"
     >
-        <div class="blog-container">
+        <v-container class="blog-container" style="max-width: 1400px;">
             <!-- Hero Section -->
-            <section class="blog-hero">
-                <h1 class="blog-hero-title">
+            <section class="blog-hero text-center mb-12 position-relative overflow-hidden">
+                <div class="cosmic-particles">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <h1 class="hero-title">
                     Journey Through the 
                     <span class="cosmic-gradient-text">Stellar Archives</span>
                 </h1>
-                <p class="blog-hero-subtitle">
+                <p class="hero-subtitle">
                     Discover insights, tutorials, and cosmic wisdom from our interstellar community
                 </p>
             </section>
 
             <!-- Categories Filter -->
-            <section class="blog-categories">
-                <div class="categories-header">
-                    <h2 class="categories-title">Explore by Constellation</h2>
-                </div>
+            <section class="blog-categories mb-12">
+                <h2 class="section-title text-center mb-6">Filter by Constellation</h2>
                 <div class="categories-grid">
-                    <Link
-                        :href="route('blog.index')"
-                        class="category-chip"
-                        :class="{ 'category-chip-active': !$page.url.includes('/category/') }"
+                    <v-chip
+                        @click="selectCategory(null)"
+                        :color="selectedCategory === null ? 'primary' : ''"
+                        :variant="selectedCategory === null ? 'elevated' : 'outlined'"
+                        size="large"
+                        class="category-chip ma-1"
                     >
-                        <i class="pi pi-globe"></i>
-                        <span>All Posts</span>
-                        <Badge :value="totalPosts" class="category-badge" />
-                    </Link>
-                    <Link
+                        <v-icon start>mdi-earth</v-icon>
+                        All Posts
+                        <v-badge
+                            :content="totalPosts"
+                            inline
+                            color="secondary"
+                            class="ml-2"
+                        />
+                    </v-chip>
+                    <v-chip
                         v-for="category in categories"
                         :key="category.id"
-                        :href="route('blog.category', category.slug)"
-                        class="category-chip"
-                        :class="{ 'category-chip-active': $page.url.includes(`/category/${category.slug}`) }"
+                        @click="selectCategory(category.id)"
+                        :color="selectedCategory === category.id ? 'primary' : ''"
+                        :variant="selectedCategory === category.id ? 'elevated' : 'outlined'"
+                        size="large"
+                        class="category-chip ma-1"
                     >
-                        <i class="pi pi-tag"></i>
-                        <span>{{ category.name }}</span>
-                        <Badge :value="category.posts_count" class="category-badge" />
-                    </Link>
+                        <v-icon start>mdi-tag</v-icon>
+                        {{ category.name }}
+                        <v-badge
+                            :content="category.posts_count"
+                            inline
+                            color="secondary"
+                            class="ml-2"
+                        />
+                    </v-chip>
                 </div>
             </section>
 
             <!-- Posts Grid -->
             <section class="blog-posts">
-                <div class="posts-grid">
-                    <Card 
-                        v-for="post in posts.data" 
-                        :key="post.id"
-                        class="post-card cosmic-card"
-                    >
-                        <template #header>
-                            <div class="post-header">
-                                <div class="post-category">
-                                    <Link 
-                                        :href="route('blog.category', post.category.slug)"
-                                        class="post-category-link"
-                                    >
-                                        {{ post.category.name }}
-                                    </Link>
-                                </div>
-                                <div class="post-date">
-                                    <i class="pi pi-calendar"></i>
-                                    {{ formatDate(post.published_at) }}
-                                </div>
-                            </div>
-                        </template>
-                        
-                        <template #title>
-                            <Link 
-                                :href="route('blog.show', post.slug)"
-                                class="post-title-link"
-                            >
-                                {{ post.title }}
-                            </Link>
-                        </template>
-                        
-                        <template #content>
-                            <p class="post-excerpt">{{ truncateText(post.content, 150) }}</p>
-                            <div class="post-meta">
-                                <div class="post-author">
-                                    <i class="pi pi-user"></i>
-                                    <span>{{ post.user.name }}</span>
-                                </div>
-                                <Link 
-                                    :href="route('blog.show', post.slug)"
-                                    class="post-read-more"
-                                >
-                                    Read More
-                                    <i class="pi pi-arrow-right"></i>
-                                </Link>
-                            </div>
-                        </template>
-                    </Card>
+                <div class="filter-results-header mb-6">
+                    <h3 class="filter-results-title">
+                        {{ currentCategoryName }}
+                        <span class="filter-results-count">({{ filteredPosts.length }} {{ filteredPosts.length === 1 ? 'post' : 'posts' }})</span>
+                    </h3>
                 </div>
+                
+                <v-row>
+                    <v-col
+                        v-for="post in filteredPosts" 
+                        :key="post.id"
+                        cols="12"
+                        md="6"
+                        lg="4"
+                    >
+                        <Link
+                            :href="route('blog.show', post.slug)"
+                            class="post-card-link"
+                        >
+                            <v-card class="post-card cosmic-card-hover h-100">
+                                <v-card-item>
+                                    <div class="post-header">
+                                        <v-chip size="small" class="post-category">
+                                            {{ post.category.name }}
+                                        </v-chip>
+                                        <div class="post-date">
+                                            <v-icon size="small" class="mr-1">mdi-calendar</v-icon>
+                                            {{ formatDate(post.published_at) }}
+                                        </div>
+                                    </div>
+                                </v-card-item>
+                                
+                                <v-card-title class="post-title">
+                                    {{ post.title }}
+                                </v-card-title>
+                                
+                                <v-card-text>
+                                    <p class="post-excerpt">{{ truncateText(post.content, 150) }}</p>
+                                    <div class="post-footer mt-4">
+                                        <div class="post-author">
+                                            <v-icon size="small" class="mr-1">mdi-account</v-icon>
+                                            <span>{{ post.user.name }}</span>
+                                        </div>
+                                        <v-icon size="small" class="post-read-indicator">
+                                            mdi-arrow-right
+                                        </v-icon>
+                                    </div>
+                                </v-card-text>
+                            </v-card>
+                        </Link>
+                    </v-col>
+                </v-row>
 
                 <!-- Empty State -->
-                <div v-if="posts.data.length === 0" class="empty-state">
-                    <i class="pi pi-inbox empty-state-icon"></i>
+                <div v-if="filteredPosts.length === 0" class="empty-posts text-center py-16">
+                    <v-icon size="x-large" class="empty-icon mb-4">mdi-inbox</v-icon>
                     <h3 class="empty-state-title">No Posts Found</h3>
-                    <p class="empty-state-text">
-                        The cosmic archives are empty at the moment. Check back soon!
+                    <p class="empty-text">
+                        <template v-if="selectedCategory">
+                            No posts found in this constellation. Try exploring other categories!
+                        </template>
+                        <template v-else>
+                            The cosmic archives are empty at the moment. Check back soon!
+                        </template>
                     </p>
+                    <v-btn 
+                        v-if="selectedCategory"
+                        @click="selectCategory(null)"
+                        variant="outlined"
+                        prepend-icon="mdi-earth"
+                        class="mt-4"
+                    >
+                        Show All Posts
+                    </v-btn>
                 </div>
 
                 <!-- Pagination -->
                 <div v-if="posts.last_page > 1" class="pagination-wrapper">
-                    <Paginator 
-                        :first="(posts.current_page - 1) * posts.per_page"
-                        :rows="posts.per_page"
-                        :totalRecords="posts.total"
-                        @page="handlePageChange"
-                        :pt="{
-                            root: { class: 'cosmic-paginator' },
-                            pages: { class: 'cosmic-paginator-pages' },
-                            firstPageButton: { class: 'cosmic-paginator-button' },
-                            previousPageButton: { class: 'cosmic-paginator-button' },
-                            nextPageButton: { class: 'cosmic-paginator-button' },
-                            lastPageButton: { class: 'cosmic-paginator-button' },
-                            pageButton: { class: 'cosmic-paginator-page' }
-                        }"
+                    <v-pagination
+                        v-model="currentPage"
+                        :length="posts.last_page"
+                        :total-visible="7"
+                        @update:model-value="handlePageChange"
+                        class="cosmic-pagination"
                     />
                 </div>
             </section>
-        </div>
+        </v-container>
     </CosmicLayout>
 </template>
 
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import CosmicLayout from '@/Components/Cosmic/CosmicLayout.vue'
-import Card from 'primevue/card'
-import Badge from 'primevue/badge'
-import Paginator from 'primevue/paginator'
 
 const props = defineProps({
     posts: Object,
     categories: Array
 })
 
+// State
+const selectedCategory = ref(null)
+const currentPage = ref(props.posts.current_page)
+
 // Computed
 const totalPosts = computed(() => {
     return props.categories.reduce((sum, cat) => sum + cat.posts_count, 0)
 })
+
+const filteredPosts = computed(() => {
+    if (!selectedCategory.value) {
+        return props.posts.data
+    }
+    return props.posts.data.filter(post => post.category.id === selectedCategory.value)
+})
+
+const currentCategoryName = computed(() => {
+    if (!selectedCategory.value) return 'All Posts'
+    const category = props.categories.find(cat => cat.id === selectedCategory.value)
+    return category ? category.name : 'All Posts'
+})
+
 
 // Methods
 const formatDate = (dateString) => {
@@ -165,186 +207,134 @@ const truncateText = (text, length) => {
     return stripped.substr(0, length).trim() + '...'
 }
 
-const handlePageChange = (event) => {
-    router.get(route('blog.index'), { page: event.page + 1 }, {
+const handlePageChange = (page) => {
+    router.get(route('blog.index'), { page }, {
         preserveState: true,
         preserveScroll: false
     })
 }
+
+const selectCategory = (categoryId) => {
+    selectedCategory.value = categoryId
+}
 </script>
 
 <style scoped>
-.blog-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
 /* Hero Section */
 .blog-hero {
-    text-align: center;
-    margin-bottom: 4rem;
     padding: 2rem 0;
 }
 
-.blog-hero-title {
-    font-size: 3rem;
+.hero-title {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
     font-weight: 800;
-    margin-bottom: 1rem;
-    color: white;
-    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    color: rgb(var(--cosmic-text));
 }
 
-.cosmic-gradient-text {
-    background: linear-gradient(135deg, var(--p-primary-color), var(--p-accent-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shimmer 3s ease-in-out infinite alternate;
-}
-
-@keyframes shimmer {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(30deg); }
-}
-
-.blog-hero-subtitle {
-    font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.8);
+.hero-subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    color: rgb(var(--cosmic-text-secondary));
     max-width: 600px;
     margin: 0 auto;
-    line-height: 1.6;
 }
 
-/* Categories Section */
-.blog-categories {
-    margin-bottom: 3rem;
+/* Section Headers */
+.section-title {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: 700;
+    color: rgb(var(--cosmic-text));
 }
 
-.categories-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.categories-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: white;
-}
-
+/* Categories */
 .categories-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
     justify-content: center;
 }
 
 .category-chip {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 2rem;
-    color: white;
-    text-decoration: none;
     transition: all 0.3s ease;
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
 }
+
+.category-chip:nth-child(1) { animation-delay: 0.1s; }
+.category-chip:nth-child(2) { animation-delay: 0.2s; }
+.category-chip:nth-child(3) { animation-delay: 0.3s; }
+.category-chip:nth-child(4) { animation-delay: 0.4s; }
+.category-chip:nth-child(5) { animation-delay: 0.5s; }
 
 .category-chip:hover {
-    background: rgba(147, 51, 234, 0.2);
-    border-color: var(--p-primary-color);
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.05);
 }
 
-.category-chip-active {
-    background: linear-gradient(135deg, var(--p-primary-color), var(--p-primary-600));
-    border-color: transparent;
+/* Filter Results */
+.filter-results-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: rgb(var(--cosmic-text));
+    margin: 0;
 }
 
-.category-badge {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    background: rgba(255, 255, 255, 0.2);
+.filter-results-count {
+    font-size: 1.25rem;
+    font-weight: 400;
+    color: rgb(var(--cosmic-text-secondary));
+    margin-left: 0.5rem;
 }
 
-/* Posts Grid */
-.posts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
+/* Post Cards */
 .post-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
+    height: 100%;
     transition: all 0.3s ease;
-    overflow: hidden;
+    background: rgba(var(--cosmic-bg-card), 0.8);
+    backdrop-filter: blur(10px);
 }
 
-.post-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--p-primary-color);
-    box-shadow: 0 20px 40px rgba(147, 51, 234, 0.3);
+.post-card-link {
+    text-decoration: none;
+    display: block;
+    color: inherit;
+    height: 100%;
 }
 
 .post-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem;
-    background: rgba(0, 0, 0, 0.2);
 }
 
-.post-category-link {
-    color: var(--p-primary-color);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: color 0.3s ease;
-}
-
-.post-category-link:hover {
-    color: var(--p-accent-color);
+.post-category {
+    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-secondary)));
+    color: white;
 }
 
 .post-date {
+    font-size: 0.875rem;
+    color: rgb(var(--cosmic-text-secondary));
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.85rem;
 }
 
-.post-title-link {
-    color: white;
-    text-decoration: none;
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.3;
-    display: block;
-    margin-bottom: 1rem;
+.post-title {
+    color: rgb(var(--cosmic-text));
     transition: color 0.3s ease;
+    font-size: 1.25rem;
+    line-height: 1.3;
 }
 
-.post-title-link:hover {
-    color: var(--p-primary-color);
+.post-card-link:hover .post-title {
+    color: rgb(var(--cosmic-primary));
 }
 
 .post-excerpt {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgb(var(--cosmic-text-secondary));
     line-height: 1.6;
-    margin-bottom: 1.5rem;
 }
 
-.post-meta {
+.post-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -353,46 +343,34 @@ const handlePageChange = (event) => {
 .post-author {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9rem;
+    color: rgb(var(--cosmic-text-secondary));
+    font-size: 0.875rem;
 }
 
-.post-read-more {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--p-primary-color);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
+.post-read-indicator {
+    color: rgb(var(--cosmic-primary));
+    transition: transform 0.3s ease;
 }
 
-.post-read-more:hover {
-    color: var(--p-accent-color);
-    gap: 0.75rem;
+.post-card-link:hover .post-read-indicator {
+    transform: translateX(5px);
 }
 
 /* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-}
-
-.empty-state-icon {
-    font-size: 4rem;
-    color: rgba(255, 255, 255, 0.3);
-    margin-bottom: 1rem;
-}
-
 .empty-state-title {
     font-size: 1.5rem;
-    color: white;
+    color: rgb(var(--cosmic-text));
     margin-bottom: 0.5rem;
 }
 
-.empty-state-text {
-    color: rgba(255, 255, 255, 0.7);
+.empty-icon {
+    color: rgb(var(--cosmic-text-secondary));
+    opacity: 0.5;
+}
+
+.empty-text {
+    color: rgb(var(--cosmic-text-secondary));
+    font-size: 1.125rem;
 }
 
 /* Pagination */
@@ -402,88 +380,20 @@ const handlePageChange = (event) => {
     margin-top: 3rem;
 }
 
-:deep(.cosmic-paginator) {
-    background: transparent;
-    border: none;
-}
-
-:deep(.cosmic-paginator-button),
-:deep(.cosmic-paginator-page) {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    margin: 0 0.25rem;
-    transition: all 0.3s ease;
-}
-
-:deep(.cosmic-paginator-button:hover),
-:deep(.cosmic-paginator-page:hover) {
-    background: rgba(147, 51, 234, 0.2);
-    border-color: var(--p-primary-color);
-}
-
-:deep(.cosmic-paginator-page.p-highlight) {
-    background: linear-gradient(135deg, var(--p-primary-color), var(--p-primary-600));
-    border-color: transparent;
+/* Cosmic Gradient Text */
+.cosmic-gradient-text {
+    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-secondary)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .blog-container {
-        padding: 1rem;
-    }
-
-    .blog-hero-title {
-        font-size: 2rem;
-    }
-
-    .blog-hero-subtitle {
-        font-size: 1.1rem;
-    }
-
-    .posts-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-
-    .category-chip {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
-
     .post-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
     }
-
-    .post-title-link {
-        font-size: 1.25rem;
-    }
-
-    .post-meta {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-}
-
-/* Dark mode adjustments */
-:global(.dark) .post-card {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-:global(.dark) .post-card:hover {
-    border-color: var(--p-primary-color);
-}
-
-:global(.dark) .category-chip {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-:global(.dark) .category-chip:hover {
-    background: rgba(147, 51, 234, 0.3);
 }
 </style>

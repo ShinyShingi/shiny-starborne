@@ -22,7 +22,7 @@ services:
     container_name: shiny-starborne-nginx
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "55100:80"
     volumes:
       - ./:/var/www
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
@@ -38,7 +38,7 @@ services:
     container_name: shiny-starborne-db
     restart: unless-stopped
     ports:
-      - "3307:3306"
+      - "55120:3306"
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
@@ -56,7 +56,7 @@ services:
     container_name: shiny-starborne-redis
     restart: unless-stopped
     ports:
-      - "6380:6379"
+      - "55130:6379"
     networks:
       - shiny-network
 
@@ -71,9 +71,9 @@ services:
       - ./node_modules:/var/www/node_modules
     networks:
       - shiny-network
-    command: sh -c "npm install --legacy-peer-deps && npm run dev -- --host 0.0.0.0"
+    command: sh -c "npm install --legacy-peer-deps && npm run dev -- --host 0.0.0.0 --port 55110"
     ports:
-      - "5173:5173"
+      - "55110:55110"
     depends_on:
       - app
 

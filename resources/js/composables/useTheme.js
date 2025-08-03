@@ -60,7 +60,7 @@ export function useTheme() {
     }
 }
 
-// Auto-initialize on import
-if (typeof window !== 'undefined') {
-    initializeTheme()
-}
+// Auto-initialize on import (removed - now handled manually in app.js)
+// if (typeof window !== 'undefined') {
+//     initializeTheme()
+// }

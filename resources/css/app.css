@@ -1,3 +1,457 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Base Theme Variables */
+@layer base {
+    :root {
+        /* Light Mode Colors */
+        --cosmic-bg: 255 255 255;
+        --cosmic-bg-secondary: 249 250 251;
+        --cosmic-text: 17 24 39;
+        --cosmic-text-secondary: 75 85 99;
+        --cosmic-text-muted: 107 114 128;
+        --cosmic-border: 229 231 235;
+        --cosmic-card-bg: 255 255 255;
+        --cosmic-card-border: 229 231 235;
+        
+        /* Component Colors */
+        --cosmic-primary: 147 51 234;
+        --cosmic-primary-hover: 126 34 206;
+        --cosmic-accent: 236 72 153;
+        --cosmic-accent-hover: 219 39 119;
+        
+        /* Status Colors */
+        --cosmic-success: 34 197 94;
+        --cosmic-warning: 251 191 36;
+        --cosmic-error: 239 68 68;
+        --cosmic-info: 59 130 246;
+    }
+    
+    .dark {
+        /* Dark Mode Colors */
+        --cosmic-bg: 10 10 10;
+        --cosmic-bg-secondary: 23 23 23;
+        --cosmic-text: 245 245 245;
+        --cosmic-text-secondary: 209 213 219;
+        --cosmic-text-muted: 156 163 175;
+        --cosmic-border: 55 65 81;
+        --cosmic-card-bg: 31 41 55;
+        --cosmic-card-border: 55 65 81;
+    }
+}
+
+/* Global Styles */
+@layer base {
+    html {
+        @apply scroll-smooth;
+    }
+    
+    body {
+        @apply bg-cosmic-bg text-cosmic-text transition-colors duration-200;
+        font-family: 'Figtree', system-ui, -apple-system, sans-serif;
+    }
+    
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+        @apply text-cosmic-text;
+    }
+    
+    p {
+        @apply text-cosmic-text-secondary;
+    }
+    
+    a {
+        @apply transition-colors duration-200;
+    }
+    
+    /* Form Elements */
+    input, textarea, select {
+        @apply bg-cosmic-card-bg text-cosmic-text border-cosmic-border;
+    }
+    
+    /* Cards and Containers */
+    .cosmic-card {
+        @apply bg-cosmic-card-bg border-cosmic-card-border text-cosmic-text;
+    }
+}
+
+/* Utility Classes */
+@layer utilities {
+    /* Background Colors */
+    .bg-cosmic-bg {
+        background-color: rgb(var(--cosmic-bg));
+    }
+    
+    .bg-cosmic-bg-secondary {
+        background-color: rgb(var(--cosmic-bg-secondary));
+    }
+    
+    .bg-cosmic-card-bg {
+        background-color: rgb(var(--cosmic-card-bg));
+    }
+    
+    /* Text Colors */
+    .text-cosmic-text {
+        color: rgb(var(--cosmic-text));
+    }
+    
+    .text-cosmic-text-secondary {
+        color: rgb(var(--cosmic-text-secondary));
+    }
+    
+    .text-cosmic-text-muted {
+        color: rgb(var(--cosmic-text-muted));
+    }
+    
+    /* Border Colors */
+    .border-cosmic-border {
+        border-color: rgb(var(--cosmic-border));
+    }
+    
+    .border-cosmic-card-border {
+        border-color: rgb(var(--cosmic-card-border));
+    }
+    
+    /* Component Colors */
+    .text-cosmic-primary {
+        color: rgb(var(--cosmic-primary));
+    }
+    
+    .bg-cosmic-primary {
+        background-color: rgb(var(--cosmic-primary));
+    }
+    
+    .hover\:bg-cosmic-primary-hover:hover {
+        background-color: rgb(var(--cosmic-primary-hover));
+    }
+}
+
+/* Glass Morphism Effects */
+@layer components {
+    .glass-light {
+        @apply bg-white/80 backdrop-blur-md border border-gray-200/50;
+    }
+    
+    .glass-dark {
+        @apply bg-gray-900/80 backdrop-blur-md border border-gray-700/50;
+    }
+    
+    .glass-auto {
+        @apply bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50;
+    }
+}
+
+/* Cosmic Gradient Text */
+@layer utilities {
+    .cosmic-gradient-text {
+        @apply bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent;
+    }
+    
+    .cosmic-gradient-bg {
+        @apply bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-500 dark:to-pink-500;
+    }
+}
+
+/* PrimeVue Theme Overrides */
+@layer utilities {
+    /* Card Component */
+    .p-card {
+        @apply bg-cosmic-card-bg border-cosmic-card-border;
+    }
+    
+    /* Light theme specific override - maximum specificity */
+    html:not(.dark) .p-card.p-card.p-card,
+    body:not(.dark) .p-card.p-card.p-card,
+    .cosmic-layout:not(.cosmic-layout-dark) .p-card.p-card.p-card,
+    :root:not(.dark) .p-card.p-card.p-card {
+        background-color: rgb(var(--cosmic-card-bg)) !important;
+        background: rgb(var(--cosmic-card-bg)) !important;
+        border-color: rgb(var(--cosmic-card-border)) !important;
+        color: rgb(var(--cosmic-text)) !important;
+    }
+    
+    /* Dark theme specific override - maximum specificity */
+    html.dark .p-card.p-card.p-card,
+    body.dark .p-card.p-card.p-card,
+    .cosmic-layout.cosmic-layout-dark .p-card.p-card.p-card,
+    .dark .p-card.p-card.p-card {
+        background-color: rgb(var(--cosmic-card-bg)) !important;
+        background: rgb(var(--cosmic-card-bg)) !important;
+        border-color: rgb(var(--cosmic-card-border)) !important;
+        color: rgb(var(--cosmic-text)) !important;
+    }
+    
+    .p-card .p-card-title {
+        @apply text-cosmic-text;
+    }
+    
+    .p-card .p-card-content {
+        @apply text-cosmic-text-secondary;
+    }
+    
+    /* Button Component */
+    .p-button {
+        @apply transition-all duration-200;
+    }
+    
+    .p-button-label {
+        @apply font-medium;
+    }
+    
+    /* Badge Component */
+    .p-badge {
+        @apply bg-cosmic-primary text-white;
+    }
+    
+    /* Toast Component */
+    .p-toast-message {
+        @apply bg-cosmic-card-bg border-cosmic-card-border;
+    }
+    
+    .p-toast-message-text {
+        @apply text-cosmic-text;
+    }
+    
+    .p-toast-detail {
+        @apply text-cosmic-text-secondary;
+    }
+}
+
+/* Ensure proper text contrast in light mode */
+@layer base {
+    .light,
+    :root:not(.dark) {
+        color-scheme: light;
+    }
+    
+    .dark {
+        color-scheme: dark;
+    }
+    
+    /* Override any hardcoded white text in light mode */
+    :root:not(.dark) [class*="text-white"]:not(.cosmic-btn-primary):not(.category-icon) {
+        @apply text-cosmic-text;
+    }
+    
+    /* Ensure proper link colors */
+    :root:not(.dark) a:not([class]) {
+        @apply text-cosmic-primary hover:text-cosmic-primary-hover;
+    }
+    
+    .dark a:not([class]) {
+        @apply text-purple-400 hover:text-purple-300;
+    }
+}
+
+/* Section Components */
+@layer components {
+    /* Section Header */
+    .section-header {
+        @apply flex justify-between items-center mb-12;
+    }
+    
+    .section-title {
+        @apply text-4xl font-bold text-cosmic-text m-0;
+    }
+    
+    .section-link {
+        @apply flex items-center gap-2 text-cosmic-primary no-underline font-semibold transition-all duration-300;
+    }
+    
+    .section-link:hover {
+        @apply text-cosmic-accent gap-3;
+    }
+    
+    /* Hero Sections */
+    .hero-content {
+        @apply max-w-4xl mx-auto mb-12;
+        animation: fadeInUp 1s ease-out;
+    }
+    
+    .hero-title {
+        @apply text-5xl lg:text-6xl font-extrabold mb-6 text-cosmic-text leading-tight;
+    }
+    
+    .hero-subtitle {
+        @apply text-xl text-cosmic-text-secondary mb-10 leading-relaxed;
+    }
+    
+    .hero-actions {
+        @apply flex gap-4 justify-center flex-wrap;
+    }
+    
+    /* Stats Cards */
+    .stat-card {
+        @apply text-center;
+        animation: float 6s ease-in-out infinite;
+        animation-delay: calc(var(--i) * 0.5s);
+    }
+    
+    .stat-card:nth-child(1) { --i: 0; }
+    .stat-card:nth-child(2) { --i: 1; }
+    .stat-card:nth-child(3) { --i: 2; }
+    
+    .stat-value {
+        @apply text-5xl font-extrabold text-cosmic-primary mb-2;
+    }
+    
+    .stat-label {
+        @apply text-cosmic-text-secondary text-base uppercase tracking-wider;
+    }
+    
+    /* Post Cards */
+    .post-card {
+        @apply bg-cosmic-card-bg/70 backdrop-blur-md border border-cosmic-card-border rounded-2xl overflow-hidden;
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+        transform-style: preserve-3d;
+        transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+    }
+    
+    .post-card:hover {
+        transform: perspective(1000px) rotateX(-5deg) rotateY(5deg) translateZ(20px);
+        @apply border-cosmic-primary;
+        box-shadow: 
+            0 30px 60px rgba(147, 51, 234, 0.4),
+            0 0 100px rgba(147, 51, 234, 0.2) inset;
+    }
+    
+    .post-header {
+        @apply flex justify-between items-center p-4 bg-cosmic-bg-secondary/50;
+    }
+    
+    .post-category {
+        @apply text-cosmic-primary no-underline font-semibold text-sm uppercase tracking-wider;
+    }
+    
+    .post-date {
+        @apply text-cosmic-text-muted text-sm;
+    }
+    
+    .post-title {
+        @apply text-cosmic-text no-underline text-xl font-bold leading-tight block mb-3 transition-colors duration-300;
+    }
+    
+    .post-title:hover {
+        @apply text-cosmic-primary;
+    }
+    
+    .post-excerpt {
+        @apply text-cosmic-text-secondary leading-relaxed mb-4;
+    }
+    
+    .post-footer {
+        @apply flex justify-between items-center;
+    }
+    
+    .post-author {
+        @apply flex items-center gap-2 text-cosmic-text-muted text-sm;
+    }
+    
+    .post-link {
+        @apply flex items-center gap-2 text-cosmic-primary no-underline font-semibold text-sm transition-all duration-300;
+    }
+    
+    .post-link:hover {
+        @apply text-cosmic-accent gap-3;
+    }
+    
+    /* Category Tiles */
+    .category-tile {
+        @apply bg-cosmic-card-bg/70 backdrop-blur-md border border-cosmic-card-border rounded-2xl p-8 text-center no-underline transition-all duration-300;
+    }
+    
+    .category-tile:hover {
+        @apply transform -translate-y-2 scale-105 border-cosmic-primary bg-cosmic-primary/20;
+        animation: pulse 1s ease infinite;
+    }
+    
+    .category-icon {
+        @apply w-16 h-16 bg-gradient-to-br from-cosmic-primary to-cosmic-accent rounded-full flex items-center justify-center mx-auto mb-4 text-2xl text-white transition-all duration-500 relative;
+    }
+    
+    .category-tile:hover .category-icon {
+        animation: rotate360 1s ease-in-out;
+        box-shadow: 0 0 30px rgba(147, 51, 234, 0.6);
+    }
+    
+    .category-name {
+        @apply text-cosmic-text text-lg font-semibold mb-2;
+    }
+    
+    .category-count {
+        @apply text-cosmic-text-muted text-sm;
+    }
+    
+    /* Feature Cards */
+    .feature-card {
+        @apply text-center p-8 relative;
+    }
+    
+    .feature-icon {
+        @apply w-20 h-20 bg-cosmic-card-bg/50 border-2 border-cosmic-primary rounded-full flex items-center justify-center mx-auto mb-6 text-3xl text-cosmic-primary transition-all duration-300;
+    }
+    
+    .feature-card:hover .feature-icon {
+        @apply bg-cosmic-primary text-white transform scale-110 rotate-[360deg];
+        animation: iconPulse 1s ease infinite;
+    }
+    
+    .feature-title {
+        @apply text-cosmic-text text-xl font-semibold mb-3;
+    }
+    
+    .feature-text {
+        @apply text-cosmic-text-secondary leading-relaxed;
+    }
+    
+    /* CTA Section */
+    .cta-card {
+        @apply border-cosmic-primary rounded-3xl;
+        background: linear-gradient(135deg, rgb(var(--cosmic-primary) / 0.2), rgb(var(--cosmic-accent) / 0.2));
+    }
+    
+    .cta-content {
+        @apply text-center py-12 px-12;
+    }
+    
+    .cta-title {
+        @apply text-3xl font-bold text-cosmic-text mb-4;
+    }
+    
+    .cta-text {
+        @apply text-lg text-cosmic-text-secondary mb-8;
+    }
+    
+    .cta-actions {
+        @apply flex gap-4 justify-center flex-wrap;
+    }
+    
+    /* Empty States */
+    .empty-posts {
+        @apply text-center py-16;
+    }
+    
+    .empty-icon {
+        @apply text-5xl text-cosmic-text-muted/50;
+    }
+    
+    .empty-text {
+        @apply text-cosmic-text-muted mt-4;
+    }
+}
+
+/* Responsive Grid Layouts */
+@layer utilities {
+    .posts-grid {
+        @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
+    }
+    
+    .categories-grid {
+        @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6;
+    }
+    
+    .features-grid {
+        @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8;
+    }
+}

@@ -63,5 +63,3 @@ It's not just a blog — it’s a living grimoire of book reviews, music rituals
 - Docker + Docker Compose
 - Node.js 20+
 - PHP 8.2+
-
-### Summon the Project

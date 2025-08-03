@@ -10,7 +10,7 @@ export default defineConfig({
             detectTls: false,
             devServer: {
                 host: 'localhost',
-                port: 5173,
+                port: 55110,
             },
         }),
         vue({
@@ -24,10 +24,10 @@ export default defineConfig({
     ],
     server: {
         host: '0.0.0.0',
-        port: 5173,
+        port: 55110,
         hmr: {
             host: 'localhost',
-            port: 5173,
+            port: 55110,
         },
     },
 });

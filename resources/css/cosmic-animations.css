@@ -1,0 +1,294 @@
+/* Cosmic Animations - Global Styles */
+
+/* Animated Gradient Text */
+.cosmic-gradient-text {
+    background: linear-gradient(270deg, 
+        #ff00ff, 
+        #00ffff, 
+        #ff00ff, 
+        #ffff00, 
+        #ff00ff
+    );
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: cosmicGradient 8s ease infinite, glow 2s ease-in-out infinite alternate;
+    position: relative;
+}
+
+@keyframes cosmicGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes glow {
+    0% { 
+        filter: brightness(1) drop-shadow(0 0 10px rgba(147, 51, 234, 0.5));
+    }
+    100% { 
+        filter: brightness(1.2) drop-shadow(0 0 20px rgba(147, 51, 234, 0.8));
+    }
+}
+
+/* Fade In Animations */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 1s ease-out;
+}
+
+/* Floating Animation */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.floating {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(147, 51, 234, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(147, 51, 234, 0);
+    }
+}
+
+/* Rotate Animation */
+@keyframes rotate360 {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.2); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Shimmer Card Animation */
+@keyframes shimmerCard {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* Icon Pulse Animation */
+@keyframes iconPulse {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(147, 51, 234, 0.6);
+    }
+    50% { 
+        box-shadow: 0 0 40px rgba(147, 51, 234, 0.9);
+    }
+}
+
+/* Cosmic Button Styles */
+.cosmic-btn-primary {
+    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-primary-hover)));
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
+}
+
+.cosmic-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(147, 51, 234, 0.4);
+}
+
+.cosmic-btn-secondary {
+    border: 2px solid rgb(var(--cosmic-primary));
+    color: rgb(var(--cosmic-primary));
+    background: rgba(147, 51, 234, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.cosmic-btn-secondary:hover {
+    background: rgb(var(--cosmic-primary));
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Cosmic Card Hover Effects */
+.cosmic-card-hover {
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+    transform-style: preserve-3d;
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+    position: relative;
+    overflow: hidden;
+}
+
+.cosmic-card-hover:hover {
+    transform: perspective(1000px) rotateX(-5deg) rotateY(5deg) translateZ(20px);
+    box-shadow: 
+        0 30px 60px rgba(147, 51, 234, 0.4),
+        0 0 100px rgba(147, 51, 234, 0.2) inset;
+}
+
+.cosmic-card-hover::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(147, 51, 234, 0.1),
+        transparent
+    );
+    transform: rotate(45deg);
+    transition: all 0.5s;
+    opacity: 0;
+}
+
+.cosmic-card-hover:hover::before {
+    animation: shimmerCard 0.5s ease;
+    opacity: 1;
+}
+
+/* Cosmic Particles */
+.cosmic-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.cosmic-particles span {
+    position: absolute;
+    display: block;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    animation: particleFloat linear infinite;
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(100px) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Category Tile Hover Effects */
+.category-tile-hover {
+    transition: all 0.3s ease;
+}
+
+.category-tile-hover:hover {
+    transform: translateY(-8px) scale(1.05);
+    animation: pulse 1s ease infinite;
+}
+
+/* Feature Card Hover Effects */
+.feature-card-hover {
+    position: relative;
+}
+
+.feature-card-hover::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(147, 51, 234, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.6s ease;
+}
+
+.feature-card-hover:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Particle positioning */
+.cosmic-particles span:nth-child(1) {
+    top: 20%; left: 10%;
+    animation-duration: 15s;
+    animation-delay: 0s;
+}
+
+.cosmic-particles span:nth-child(2) {
+    top: 80%; left: 20%;
+    animation-duration: 20s;
+    animation-delay: 2s;
+}
+
+.cosmic-particles span:nth-child(3) {
+    top: 40%; left: 30%;
+    animation-duration: 18s;
+    animation-delay: 4s;
+}
+
+.cosmic-particles span:nth-child(4) {
+    top: 60%; left: 40%;
+    animation-duration: 22s;
+    animation-delay: 1s;
+}
+
+.cosmic-particles span:nth-child(5) {
+    top: 30%; left: 50%;
+    animation-duration: 16s;
+    animation-delay: 3s;
+}
+
+.cosmic-particles span:nth-child(6) {
+    top: 70%; left: 60%;
+    animation-duration: 19s;
+    animation-delay: 5s;
+}
+
+.cosmic-particles span:nth-child(7) {
+    top: 50%; left: 70%;
+    animation-duration: 21s;
+    animation-delay: 2.5s;
+}
+
+.cosmic-particles span:nth-child(8) {
+    top: 10%; left: 80%;
+    animation-duration: 17s;
+    animation-delay: 1.5s;
+}
+
+.cosmic-particles span:nth-child(9) {
+    top: 90%; left: 90%;
+    animation-duration: 23s;
+    animation-delay: 3.5s;
+}
+
+.cosmic-particles span:nth-child(10) {
+    top: 25%; left: 95%;
+    animation-duration: 14s;
+    animation-delay: 4.5s;
+}

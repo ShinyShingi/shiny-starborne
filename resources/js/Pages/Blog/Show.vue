@@ -5,19 +5,24 @@
         :title="post.title" 
         background-variant="hero"
     >
-        <article class="post-container">
+        <v-container class="post-container" style="max-width: 900px;">
             <!-- Post Header -->
-            <header class="post-header">
+            <header class="post-header text-center mb-12">
                 <div class="post-meta-top">
                     <Link 
                         :href="route('blog.category', post.category.slug)"
-                        class="post-category-badge"
+                        class="text-decoration-none"
                     >
-                        <i class="pi pi-tag"></i>
-                        {{ post.category.name }}
+                        <v-chip 
+                            color="primary"
+                            size="large"
+                            prepend-icon="mdi-tag"
+                        >
+                            {{ post.category.name }}
+                        </v-chip>
                     </Link>
                     <div class="post-date">
-                        <i class="pi pi-calendar"></i>
+                        <v-icon size="small" class="mr-1">mdi-calendar</v-icon>
                         {{ formatDate(post.published_at) }}
                     </div>
                 </div>
@@ -25,9 +30,9 @@
                 <h1 class="post-title">{{ post.title }}</h1>
                 
                 <div class="post-author-info">
-                    <div class="author-avatar">
-                        <i class="pi pi-user"></i>
-                    </div>
+                    <v-avatar class="author-avatar" color="primary">
+                        <v-icon color="white">mdi-account</v-icon>
+                    </v-avatar>
                     <div class="author-details">
                         <div class="author-name">{{ post.user.name }}</div>
                         <div class="author-role">Cosmic Explorer</div>
@@ -37,51 +42,57 @@
 
             <!-- Post Content -->
             <div class="post-content">
-                <Card class="content-card">
-                    <template #content>
+                <v-card class="content-card mb-8">
+                    <v-card-text>
                         <div class="prose" v-html="post.content"></div>
-                    </template>
-                </Card>
+                    </v-card-text>
+                </v-card>
             </div>
 
             <!-- Share Section -->
-            <div class="post-share">
-                <h3 class="share-title">Share this cosmic insight</h3>
+            <div class="post-share text-center mb-8">
+                <h3 class="share-title mb-4">Share this cosmic insight</h3>
                 <div class="share-buttons">
-                    <Button 
-                        icon="pi pi-link"
-                        severity="secondary"
-                        outlined
-                        rounded
-                        v-tooltip="'Copy link'"
-                        @click="copyLink"
-                    />
-                    <Button 
-                        icon="pi pi-twitter"
-                        severity="secondary"
-                        outlined
-                        rounded
-                        v-tooltip="'Share on Twitter'"
-                        @click="shareOnTwitter"
-                    />
-                    <Button 
-                        icon="pi pi-facebook"
-                        severity="secondary"
-                        outlined
-                        rounded
-                        v-tooltip="'Share on Facebook'"
-                        @click="shareOnFacebook"
-                    />
+                    <v-tooltip text="Copy link" location="bottom">
+                        <template v-slot:activator="{ props }">
+                            <v-btn
+                                v-bind="props"
+                                icon="mdi-link-variant"
+                                variant="outlined"
+                                @click="copyLink"
+                            />
+                        </template>
+                    </v-tooltip>
+                    <v-tooltip text="Share on Twitter" location="bottom">
+                        <template v-slot:activator="{ props }">
+                            <v-btn
+                                v-bind="props"
+                                icon="mdi-twitter"
+                                variant="outlined"
+                                @click="shareOnTwitter"
+                            />
+                        </template>
+                    </v-tooltip>
+                    <v-tooltip text="Share on Facebook" location="bottom">
+                        <template v-slot:activator="{ props }">
+                            <v-btn
+                                v-bind="props"
+                                icon="mdi-facebook"
+                                variant="outlined"
+                                @click="shareOnFacebook"
+                            />
+                        </template>
+                    </v-tooltip>
                 </div>
             </div>
 
             <!-- Navigation -->
-            <div class="post-navigation">
+            <div class="post-navigation mb-12">
                 <Link 
                     :href="route('blog.index')"
                     class="nav-link nav-back"
                 >
-                    <i class="pi pi-arrow-left"></i>
+                    <v-icon size="small" class="mr-1">mdi-arrow-left</v-icon>
                     Back to Blog
                 </Link>
                 <Link 
@@ -89,68 +100,82 @@
                     class="nav-link nav-category"
                 >
                     More in {{ post.category.name }}
-                    <i class="pi pi-arrow-right"></i>
+                    <v-icon size="small" class="ml-1">mdi-arrow-right</v-icon>
                 </Link>
             </div>
 
             <!-- Related Posts -->
             <section v-if="relatedPosts.length > 0" class="related-posts">
-                <h2 class="related-title">
+                <h2 class="related-title text-center mb-8">
                     Continue Your 
                     <span class="cosmic-gradient-text">Cosmic Journey</span>
                 </h2>
-                <div class="related-grid">
-                    <Card 
+                <v-row>
+                    <v-col
                         v-for="relatedPost in relatedPosts" 
                         :key="relatedPost.id"
-                        class="related-card"
+                        cols="12"
+                        md="6"
+                        lg="4"
                     >
-                        <template #title>
-                            <Link 
-                                :href="route('blog.show', relatedPost.slug)"
-                                class="related-card-title"
-                            >
-                                {{ relatedPost.title }}
-                            </Link>
-                        </template>
-                        <template #content>
-                            <p class="related-excerpt">
-                                {{ truncateText(relatedPost.content, 100) }}
-                            </p>
-                            <div class="related-meta">
-                                <span class="related-date">
-                                    {{ formatDate(relatedPost.published_at) }}
-                                </span>
+                        <v-card class="related-card h-100">
+                            <v-card-title>
                                 <Link 
                                     :href="route('blog.show', relatedPost.slug)"
-                                    class="related-read-more"
+                                    class="related-card-title"
                                 >
-                                    Read More
-                                    <i class="pi pi-arrow-right"></i>
+                                    {{ relatedPost.title }}
                                 </Link>
-                            </div>
-                        </template>
-                    </Card>
-                </div>
+                            </v-card-title>
+                            <v-card-text>
+                                <p class="related-excerpt">
+                                    {{ truncateText(relatedPost.content, 100) }}
+                                </p>
+                                <div class="related-meta">
+                                    <span class="related-date">
+                                        {{ formatDate(relatedPost.published_at) }}
+                                    </span>
+                                    <Link 
+                                        :href="route('blog.show', relatedPost.slug)"
+                                        class="related-read-more"
+                                    >
+                                        Read More
+                                        <v-icon size="small" class="ml-1">mdi-arrow-right</v-icon>
+                                    </Link>
+                                </div>
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
             </section>
-        </article>
+        </v-container>
+        
+        <!-- Snackbar for notifications -->
+        <v-snackbar
+            v-model="snackbar"
+            :color="snackbarColor"
+            timeout="3000"
+            location="top right"
+        >
+            {{ snackbarText }}
+        </v-snackbar>
     </CosmicLayout>
 </template>
 
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
-import { useToast } from 'primevue/usetoast'
+import { ref } from 'vue'
 import CosmicLayout from '@/Components/Cosmic/CosmicLayout.vue'
-import Card from 'primevue/card'
-import Button from 'primevue/button'
-import Tooltip from 'primevue/tooltip'
 
 const props = defineProps({
     post: Object,
     relatedPosts: Array
 })
 
-const toast = useToast()
+// Snackbar state
+const snackbar = ref(false)
+const snackbarText = ref('')
+const snackbarColor = ref('success')
 
 // Methods
 const formatDate = (dateString) => {
@@ -170,12 +195,9 @@ const truncateText = (text, length) => {
 
 const copyLink = () => {
     navigator.clipboard.writeText(window.location.href)
-    toast.add({
-        severity: 'success',
-        summary: 'Link Copied',
-        detail: 'Post link copied to clipboard',
-        life: 3000
-    })
+    snackbarText.value = 'Post link copied to clipboard'
+    snackbarColor.value = 'success'
+    snackbar.value = true
 }
 
 const shareOnTwitter = () => {
@@ -191,18 +213,7 @@ const shareOnFacebook = () => {
 </script>
 
 <style scoped>
-.post-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
 /* Post Header */
-.post-header {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
 .post-meta-top {
     display: flex;
     justify-content: center;
@@ -211,37 +222,17 @@ const shareOnFacebook = () => {
     margin-bottom: 1.5rem;
 }
 
-.post-category-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: linear-gradient(135deg, var(--p-primary-color), var(--p-primary-600));
-    border-radius: 2rem;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.post-category-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
-}
-
 .post-date {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgb(var(--cosmic-text-secondary));
     font-size: 0.9rem;
 }
 
 .post-title {
-    font-size: 3rem;
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
     font-weight: 800;
-    color: white;
+    color: rgb(var(--cosmic-text));
     margin-bottom: 2rem;
     line-height: 1.2;
 }
@@ -256,13 +247,6 @@ const shareOnFacebook = () => {
 .author-avatar {
     width: 50px;
     height: 50px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--p-primary-color), var(--p-accent-color));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
 }
 
 .author-details {
@@ -271,32 +255,29 @@ const shareOnFacebook = () => {
 
 .author-name {
     font-weight: 600;
-    color: white;
+    color: rgb(var(--cosmic-text));
     font-size: 1.1rem;
 }
 
 .author-role {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgb(var(--cosmic-text-secondary));
     font-size: 0.9rem;
 }
 
 /* Post Content */
 .content-card {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--cosmic-bg-card), 0.8);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
-    margin-bottom: 3rem;
 }
 
 .prose {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgb(var(--cosmic-text));
     line-height: 1.8;
     font-size: 1.1rem;
 }
 
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-    color: white;
+    color: rgb(var(--cosmic-text));
     margin-top: 2rem;
     margin-bottom: 1rem;
 }
@@ -325,24 +306,24 @@ const shareOnFacebook = () => {
 }
 
 .prose a {
-    color: var(--p-primary-color);
+    color: rgb(var(--cosmic-primary));
     text-decoration: underline;
 }
 
 .prose a:hover {
-    color: var(--p-accent-color);
+    color: rgb(var(--cosmic-accent));
 }
 
 .prose blockquote {
-    border-left: 4px solid var(--p-primary-color);
+    border-left: 4px solid rgb(var(--cosmic-primary));
     padding-left: 1.5rem;
     margin: 2rem 0;
     font-style: italic;
-    color: rgba(255, 255, 255, 0.8);
+    color: rgb(var(--cosmic-text-secondary));
 }
 
 .prose code {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(var(--cosmic-bg-secondary), 0.5);
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
     font-family: monospace;
@@ -350,7 +331,7 @@ const shareOnFacebook = () => {
 }
 
 .prose pre {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(var(--cosmic-bg-secondary), 0.8);
     padding: 1.5rem;
     border-radius: 0.5rem;
     overflow-x: auto;
@@ -363,16 +344,9 @@ const shareOnFacebook = () => {
 }
 
 /* Share Section */
-.post-share {
-    text-align: center;
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-
 .share-title {
     font-size: 1.25rem;
-    color: white;
-    margin-bottom: 1rem;
+    color: rgb(var(--cosmic-text));
 }
 
 .share-buttons {
@@ -386,22 +360,20 @@ const shareOnFacebook = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 3rem;
     padding: 0 1rem;
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: var(--p-primary-color);
+    color: rgb(var(--cosmic-primary));
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-    color: var(--p-accent-color);
+    color: rgb(var(--cosmic-accent));
 }
 
 .nav-back:hover {
@@ -413,47 +385,33 @@ const shareOnFacebook = () => {
 }
 
 /* Related Posts */
-.related-posts {
-    margin-top: 4rem;
-}
-
 .related-title {
-    text-align: center;
     font-size: 2rem;
     font-weight: 700;
-    color: white;
-    margin-bottom: 2rem;
+    color: rgb(var(--cosmic-text));
 }
 
 .cosmic-gradient-text {
-    background: linear-gradient(135deg, var(--p-primary-color), var(--p-accent-color));
+    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-accent)));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-.related-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-}
-
 .related-card {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(var(--cosmic-bg-card), 0.8);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
     transition: all 0.3s ease;
+    height: 100%;
 }
 
 .related-card:hover {
     transform: translateY(-4px);
-    border-color: var(--p-primary-color);
-    box-shadow: 0 15px 30px rgba(147, 51, 234, 0.3);
+    box-shadow: 0 15px 30px rgba(var(--cosmic-primary), 0.3);
 }
 
 .related-card-title {
-    color: white;
+    color: rgb(var(--cosmic-text));
     text-decoration: none;
     font-size: 1.25rem;
     font-weight: 600;
@@ -463,11 +421,11 @@ const shareOnFacebook = () => {
 }
 
 .related-card-title:hover {
-    color: var(--p-primary-color);
+    color: rgb(var(--cosmic-primary));
 }
 
 .related-excerpt {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgb(var(--cosmic-text-secondary));
     line-height: 1.6;
     margin-bottom: 1rem;
 }
@@ -479,15 +437,14 @@ const shareOnFacebook = () => {
 }
 
 .related-date {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgb(var(--cosmic-text-secondary));
     font-size: 0.85rem;
 }
 
 .related-read-more {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: var(--p-primary-color);
+    color: rgb(var(--cosmic-primary));
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
@@ -495,16 +452,11 @@ const shareOnFacebook = () => {
 }
 
 .related-read-more:hover {
-    color: var(--p-accent-color);
-    gap: 0.75rem;
+    color: rgb(var(--cosmic-accent));
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .post-container {
-        padding: 1rem;
-    }
-
     .post-title {
         font-size: 2rem;
     }
@@ -523,27 +475,8 @@ const shareOnFacebook = () => {
         gap: 1rem;
     }
 
-    .related-grid {
-        grid-template-columns: 1fr;
-    }
-
     .share-buttons {
         flex-wrap: wrap;
     }
-}
-
-/* Dark mode adjustments */
-:global(.dark) .content-card {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-:global(.dark) .related-card {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-:global(.dark) .prose {
-    color: rgba(255, 255, 255, 0.85);
 }
 </style>

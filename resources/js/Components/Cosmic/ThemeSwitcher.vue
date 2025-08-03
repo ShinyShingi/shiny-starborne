@@ -1,30 +1,43 @@
 <template>
     <div class="theme-switcher">
-        <Button
-            @click="toggleTheme"
-            :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
-            severity="secondary"
-            text
-            rounded
-            :class="switcherClasses"
-            v-tooltip.bottom="tooltipText"
-            aria-label="Toggle theme"
-        >
-            <template #default>
-                <span class="sr-only">{{ tooltipText }}</span>
+        <v-tooltip :text="tooltipText" location="bottom">
+            <template v-slot:activator="{ props }">
+                <v-btn
+                    v-bind="props"
+                    @click="toggleTheme"
+                    :icon="isDarkMode ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
+                    variant="text"
+                    :class="switcherClasses"
+                    aria-label="Toggle theme"
+                />
             </template>
-        </Button>
+        </v-tooltip>
     </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useTheme } from '@/composables/useTheme'
-import Button from 'primevue/button'
-import Tooltip from 'primevue/tooltip'
+import { useTheme as useVuetifyTheme } from 'vuetify'
 
 // Theme composable
-const { isDarkMode, toggleTheme } = useTheme()
+const { isDarkMode, toggleTheme: toggleCosmicTheme } = useTheme()
+
+// Vuetify theme
+const vuetifyTheme = useVuetifyTheme()
+
+// Toggle both themes
+const toggleTheme = () => {
+    toggleCosmicTheme()
+    // Update Vuetify theme after cosmic theme changes
+    vuetifyTheme.global.name.value = !isDarkMode.value ? 'dark' : 'light'
+}
+
+// Sync Vuetify theme with cosmic theme on mount
+import { onMounted } from 'vue'
+onMounted(() => {
+    vuetifyTheme.global.name.value = isDarkMode.value ? 'dark' : 'light'
+})
 
 // Computed properties
 const tooltipText = computed(() => 
@@ -107,12 +120,5 @@ const switcherClasses = computed(() => [
     50% {
         background-position: 100% 50%;
     }
-}
-
-.sr-only {
-    @apply absolute w-px h-px p-0 -m-px overflow-hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
 }
 </style>

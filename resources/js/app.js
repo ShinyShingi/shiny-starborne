@@ -1,4 +1,5 @@
 import '../css/app.css';
+import '../css/cosmic-animations.css';
 import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/vue3';
@@ -10,6 +11,8 @@ import Cosmic from './themes/cosmic';
 import 'primeicons/primeicons.css';
 import { initializeTheme } from './composables/useTheme';
 import ToastService from 'primevue/toastservice';
+import Tooltip from 'primevue/tooltip';
+import vuetify from './plugins/vuetify';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -33,6 +36,8 @@ createInertiaApp({
                 }
             })
             .use(ToastService)
+            .use(vuetify)
+            .directive('tooltip', Tooltip)
             .mount(el);
     },
     progress: {

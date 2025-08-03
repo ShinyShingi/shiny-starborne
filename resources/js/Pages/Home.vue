@@ -7,7 +7,19 @@
         :show-header="true"
     >
         <!-- Hero Section -->
-        <section class="home-hero">
+        <v-container fluid class="py-16 text-center position-relative overflow-hidden">
+            <div class="cosmic-particles">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
             <div class="hero-content">
                 <h1 class="hero-title">
                     Welcome to the
@@ -17,53 +29,42 @@
                     Explore our stellar content, discover cosmic insights, and join our interstellar community
                 </p>
                 <div class="hero-actions">
-                    <Button 
-                        v-if="$page.props.auth.user"
-                        @click="() => $inertia.visit(route('dashboard'))"
-                        label="Enter Dashboard" 
-                        icon="pi pi-rocket" 
+                    <v-btn 
+                        v-if="!$page.props.auth.user && canLogin"
+                        @click="() => $inertia.visit(route('login'))"
                         size="large"
+                        color="primary"
+                        prepend-icon="mdi-login"
                         class="cosmic-btn-primary"
-                    />
-                    <template v-else>
-                        <Button 
-                            v-if="canLogin"
-                            @click="() => $inertia.visit(route('login'))"
-                            label="Sign In" 
-                            icon="pi pi-sign-in" 
-                            size="large"
-                            class="cosmic-btn-primary"
-                        />
-                        <Button 
-                            v-if="canRegister"
-                            @click="() => $inertia.visit(route('register'))"
-                            label="Join the Cosmos" 
-                            icon="pi pi-user-plus" 
-                            size="large"
-                            outlined
-                            class="cosmic-btn-secondary"
-                        />
-                    </template>
+                    >
+                        Sign In
+                    </v-btn>
+                    <v-btn 
+                        v-if="!$page.props.auth.user && canRegister"
+                        @click="() => $inertia.visit(route('register'))"
+                        size="large"
+                        variant="outlined"
+                        prepend-icon="mdi-account-plus"
+                        class="cosmic-btn-secondary"
+                    >
+                        Join the Cosmos
+                    </v-btn>
+                    <v-btn 
+                        @click="() => $inertia.visit(route('blog.index'))"
+                        size="large"
+                        :color="$page.props.auth.user ? 'primary' : ''"
+                        :variant="!$page.props.auth.user ? 'outlined' : 'elevated'"
+                        prepend-icon="mdi-book-open-variant"
+                        :class="$page.props.auth.user ? 'cosmic-btn-primary' : 'cosmic-btn-secondary'"
+                    >
+                        Explore Blog
+                    </v-btn>
                 </div>
             </div>
-            <div class="hero-stats">
-                <div class="stat-card">
-                    <div class="stat-value">{{ totalPosts }}</div>
-                    <div class="stat-label">Cosmic Articles</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ categories.length }}</div>
-                    <div class="stat-label">Constellations</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">∞</div>
-                    <div class="stat-label">Possibilities</div>
-                </div>
-            </div>
-        </section>
+        </v-container>
 
         <!-- Latest Posts Section -->
-        <section class="home-posts">
+        <v-container class="py-16" style="max-width: 1400px;">
             <div class="section-header">
                 <h2 class="section-title">
                     Latest from the 
@@ -74,180 +75,105 @@
                     class="section-link"
                 >
                     View All Posts
-                    <i class="pi pi-arrow-right"></i>
+                    <v-icon size="small" class="ml-1">mdi-arrow-right</v-icon>
                 </Link>
             </div>
 
-            <div class="posts-grid">
-                <Card 
+            <v-row class="mt-8">
+                <v-col
                     v-for="post in latestPosts" 
                     :key="post.id"
-                    class="post-card"
+                    cols="12"
+                    md="6"
+                    lg="4"
                 >
-                    <template #header>
-                        <div class="post-header">
-                            <Link 
-                                :href="route('blog.category', post.category.slug)"
-                                class="post-category"
-                            >
-                                {{ post.category.name }}
-                            </Link>
-                            <span class="post-date">
-                                {{ formatDate(post.published_at) }}
-                            </span>
-                        </div>
-                    </template>
-                    
-                    <template #title>
-                        <Link 
-                            :href="route('blog.show', post.slug)"
-                            class="post-title"
-                        >
-                            {{ post.title }}
-                        </Link>
-                    </template>
-                    
-                    <template #content>
-                        <p class="post-excerpt">{{ truncateText(post.content, 120) }}</p>
-                        <div class="post-footer">
-                            <span class="post-author">
-                                <i class="pi pi-user"></i>
-                                {{ post.user.name }}
-                            </span>
-                            <Link 
-                                :href="route('blog.show', post.slug)"
-                                class="post-link"
-                            >
-                                Read More
-                                <i class="pi pi-arrow-right"></i>
-                            </Link>
-                        </div>
-                    </template>
-                </Card>
-            </div>
+                    <Link
+                        :href="route('blog.show', post.slug)"
+                        class="post-card-link"
+                    >
+                        <v-card class="post-card cosmic-card-hover h-100">
+                            <v-card-item>
+                                <div class="post-header">
+                                    <v-chip size="small" class="post-category">
+                                        {{ post.category.name }}
+                                    </v-chip>
+                                    <span class="post-date">
+                                        {{ formatDate(post.published_at) }}
+                                    </span>
+                                </div>
+                            </v-card-item>
+                            
+                            <v-card-title class="post-title">
+                                {{ post.title }}
+                            </v-card-title>
+                            
+                            <v-card-text>
+                                <p class="post-excerpt">{{ truncateText(post.content, 120) }}</p>
+                                <div class="post-footer mt-4">
+                                    <span class="post-author">
+                                        <v-icon size="small" class="mr-1">mdi-account</v-icon>
+                                        {{ post.user.name }}
+                                    </span>
+                                    <v-icon size="small" class="post-read-indicator">
+                                        mdi-arrow-right
+                                    </v-icon>
+                                </div>
+                            </v-card-text>
+                        </v-card>
+                    </Link>
+                </v-col>
+            </v-row>
 
-            <div v-if="latestPosts.length === 0" class="empty-posts">
-                <i class="pi pi-inbox empty-icon"></i>
+            <div v-if="latestPosts.length === 0" class="empty-posts text-center py-16">
+                <v-icon size="x-large" class="empty-icon mb-4">mdi-inbox</v-icon>
                 <p class="empty-text">No cosmic insights available yet</p>
             </div>
-        </section>
+        </v-container>
 
         <!-- Categories Section -->
-        <section class="home-categories">
-            <div class="section-header">
-                <h2 class="section-title">
-                    Explore Our 
-                    <span class="cosmic-gradient-text">Constellations</span>
-                </h2>
-            </div>
-
-            <div class="categories-grid">
-                <Link
-                    v-for="category in categories"
-                    :key="category.id"
-                    :href="route('blog.category', category.slug)"
-                    class="category-tile"
-                >
-                    <div class="category-icon">
-                        <i class="pi pi-sparkles"></i>
-                    </div>
-                    <h3 class="category-name">{{ category.name }}</h3>
-                    <p class="category-count">
-                        {{ category.posts_count }} 
-                        {{ category.posts_count === 1 ? 'article' : 'articles' }}
-                    </p>
-                </Link>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <section class="home-features">
-            <div class="section-header">
-                <h2 class="section-title">
-                    Powered by 
-                    <span class="cosmic-gradient-text">Stellar Technology</span>
-                </h2>
-            </div>
-
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="pi pi-code"></i>
-                    </div>
-                    <h3 class="feature-title">Laravel 12</h3>
-                    <p class="feature-text">
-                        Modern PHP framework with elegant syntax and powerful features
-                    </p>
+        <div class="py-16 bg-cosmic-bg-secondary">
+            <v-container style="max-width: 1400px;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        Explore Our 
+                        <span class="cosmic-gradient-text">Constellations</span>
+                    </h2>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="pi pi-bolt"></i>
-                    </div>
-                    <h3 class="feature-title">Vue 3 + Inertia</h3>
-                    <p class="feature-text">
-                        Reactive frontend with seamless server-side integration
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="pi pi-palette"></i>
-                    </div>
-                    <h3 class="feature-title">Cosmic Theme</h3>
-                    <p class="feature-text">
-                        Beautiful nebula-inspired design with dark/light modes
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="pi pi-box"></i>
-                    </div>
-                    <h3 class="feature-title">Docker Ready</h3>
-                    <p class="feature-text">
-                        Containerized development for consistent deployment
-                    </p>
-                </div>
-            </div>
-        </section>
 
-        <!-- CTA Section -->
-        <section class="home-cta">
-            <Card class="cta-card">
-                <template #content>
-                    <div class="cta-content">
-                        <h2 class="cta-title">Ready to Start Your Cosmic Journey?</h2>
-                        <p class="cta-text">
-                            Join our community and explore the infinite possibilities of modern web development
-                        </p>
-                        <div class="cta-actions">
-                            <Button 
-                                v-if="!$page.props.auth.user && canRegister"
-                                @click="() => $inertia.visit(route('register'))"
-                                label="Get Started" 
-                                icon="pi pi-rocket" 
-                                size="large"
-                                class="cosmic-btn-primary"
-                            />
-                            <Button 
-                                @click="() => $inertia.visit(route('blog.index'))"
-                                label="Explore Content" 
-                                icon="pi pi-book" 
-                                size="large"
-                                outlined
-                                class="cosmic-btn-secondary"
-                            />
-                        </div>
-                    </div>
-                </template>
-            </Card>
-        </section>
+                <v-row class="mt-8">
+                    <v-col
+                        v-for="category in categories"
+                        :key="category.id"
+                        cols="12"
+                        sm="6"
+                        md="4"
+                        lg="3"
+                    >
+                        <Link
+                            :href="route('blog.category', category.slug)"
+                            class="text-decoration-none"
+                        >
+                            <v-card class="category-tile category-tile-hover text-center pa-6">
+                                <div class="category-icon mb-3">
+                                    <v-icon size="x-large">mdi-sparkles</v-icon>
+                                </div>
+                                <h3 class="category-name">{{ category.name }}</h3>
+                                <p class="category-count mt-2">
+                                    {{ category.posts_count }} 
+                                    {{ category.posts_count === 1 ? 'article' : 'articles' }}
+                                </p>
+                            </v-card>
+                        </Link>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </div>
     </CosmicLayout>
 </template>
 
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
 import CosmicLayout from '@/Components/Cosmic/CosmicLayout.vue'
-import Card from 'primevue/card'
-import Button from 'primevue/button'
 
 const props = defineProps({
     latestPosts: Array,
@@ -275,43 +201,25 @@ const truncateText = (text, length) => {
 
 <style scoped>
 /* Hero Section */
-.home-hero {
-    text-align: center;
-    padding: 4rem 2rem 6rem;
-    position: relative;
-}
-
 .hero-content {
-    max-width: 800px;
-    margin: 0 auto 3rem;
+    position: relative;
+    z-index: 10;
 }
 
 .hero-title {
-    font-size: 3.5rem;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
     font-weight: 800;
     margin-bottom: 1.5rem;
-    color: white;
     line-height: 1.1;
 }
 
-.cosmic-gradient-text {
-    background: linear-gradient(135deg, var(--p-primary-color), var(--p-accent-color));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shimmer 3s ease-in-out infinite alternate;
-}
-
-@keyframes shimmer {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(30deg); }
-}
-
 .hero-subtitle {
-    font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 2.5rem;
-    line-height: 1.6;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    color: rgb(var(--cosmic-text-secondary));
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .hero-actions {
@@ -321,156 +229,79 @@ const truncateText = (text, length) => {
     flex-wrap: wrap;
 }
 
-.cosmic-btn-primary {
-    background: linear-gradient(135deg, var(--p-primary-color), var(--p-primary-600));
-    border: none;
-    color: white;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
-}
-
-.cosmic-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(147, 51, 234, 0.4);
-}
-
-.cosmic-btn-secondary {
-    border: 2px solid var(--p-primary-color);
-    color: var(--p-primary-color);
-    background: rgba(147, 51, 234, 0.1);
-    backdrop-filter: blur(10px);
-}
-
-.cosmic-btn-secondary:hover {
-    background: var(--p-primary-color);
-    color: white;
-    transform: translateY(-2px);
-}
-
-.hero-stats {
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    flex-wrap: wrap;
-}
-
-.stat-card {
-    text-align: center;
-}
-
-.stat-value {
-    font-size: 3rem;
-    font-weight: 800;
-    color: var(--p-primary-color);
-    margin-bottom: 0.5rem;
-}
-
-.stat-label {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Section Common */
+/* Section Headers */
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
 .section-title {
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 700;
-    color: white;
-    margin: 0;
 }
 
 .section-link {
+    color: rgb(var(--cosmic-primary));
+    text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: var(--p-primary-color);
-    text-decoration: none;
-    font-weight: 600;
+    gap: 0.25rem;
     transition: all 0.3s ease;
 }
 
 .section-link:hover {
-    color: var(--p-accent-color);
-    gap: 0.75rem;
+    color: rgb(var(--cosmic-primary-hover));
+    transform: translateX(5px);
 }
 
-/* Posts Section */
-.home-posts {
-    padding: 4rem 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.posts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-    gap: 2rem;
-}
-
+/* Post Cards */
 .post-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
+    height: 100%;
     transition: all 0.3s ease;
-    overflow: hidden;
+    background: rgba(var(--cosmic-bg-card), 0.8);
+    backdrop-filter: blur(10px);
 }
 
-.post-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--p-primary-color);
-    box-shadow: 0 20px 40px rgba(147, 51, 234, 0.3);
+.post-card-link {
+    text-decoration: none;
+    display: block;
+    color: inherit;
+    height: 100%;
 }
 
 .post-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
 }
 
 .post-category {
-    color: var(--p-primary-color);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-secondary)));
+    color: white;
 }
 
 .post-date {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.85rem;
+    font-size: 0.875rem;
+    color: rgb(var(--cosmic-text-secondary));
 }
 
 .post-title {
-    color: white;
-    text-decoration: none;
-    font-size: 1.25rem;
-    font-weight: 700;
-    line-height: 1.3;
-    display: block;
-    margin-bottom: 0.75rem;
+    color: rgb(var(--cosmic-text));
     transition: color 0.3s ease;
+    font-size: 1.25rem;
+    line-height: 1.3;
 }
 
-.post-title:hover {
-    color: var(--p-primary-color);
+.post-card-link:hover .post-title {
+    color: rgb(var(--cosmic-primary));
 }
 
 .post-excerpt {
-    color: rgba(255, 255, 255, 0.8);
+    color: rgb(var(--cosmic-text-secondary));
     line-height: 1.6;
-    margin-bottom: 1rem;
 }
 
 .post-footer {
@@ -482,253 +313,86 @@ const truncateText = (text, length) => {
 .post-author {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.85rem;
+    color: rgb(var(--cosmic-text-secondary));
+    font-size: 0.875rem;
 }
 
-.post-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--p-primary-color);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+.post-read-indicator {
+    color: rgb(var(--cosmic-primary));
+    transition: transform 0.3s ease;
 }
 
-.post-link:hover {
-    color: var(--p-accent-color);
-    gap: 0.75rem;
+.post-card-link:hover .post-read-indicator {
+    transform: translateX(5px);
 }
 
-.empty-posts {
-    text-align: center;
-    padding: 4rem;
-}
-
-.empty-icon {
-    font-size: 3rem;
-    color: rgba(255, 255, 255, 0.3);
-}
-
-.empty-text {
-    color: rgba(255, 255, 255, 0.6);
-    margin-top: 1rem;
-}
-
-/* Categories Section */
-.home-categories {
-    padding: 4rem 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
-    background: rgba(0, 0, 0, 0.2);
-}
-
-.categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1.5rem;
-}
-
+/* Category Tiles */
 .category-tile {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
-    padding: 2rem;
-    text-align: center;
-    text-decoration: none;
     transition: all 0.3s ease;
+    background: rgba(var(--cosmic-bg-card), 0.8);
+    backdrop-filter: blur(10px);
+    height: 100%;
 }
 
 .category-tile:hover {
-    transform: translateY(-8px);
-    border-color: var(--p-primary-color);
-    background: rgba(147, 51, 234, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(var(--cosmic-primary), 0.3);
 }
 
 .category-icon {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, var(--p-primary-color), var(--p-accent-color));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    font-size: 1.5rem;
-    color: white;
+    color: rgb(var(--cosmic-primary));
 }
 
 .category-name {
-    color: white;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    color: rgb(var(--cosmic-text));
 }
 
 .category-count {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
+    color: rgb(var(--cosmic-text-secondary));
+    font-size: 0.875rem;
 }
 
-/* Features Section */
-.home-features {
+/* Empty State */
+.empty-posts {
     padding: 4rem 2rem;
-    max-width: 1400px;
-    margin: 0 auto;
 }
 
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+.empty-icon {
+    color: rgb(var(--cosmic-text-secondary));
+    opacity: 0.5;
 }
 
-.feature-card {
-    text-align: center;
-    padding: 2rem;
+.empty-text {
+    color: rgb(var(--cosmic-text-secondary));
+    font-size: 1.125rem;
 }
 
-.feature-icon {
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid var(--p-primary-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 2rem;
-    color: var(--p-primary-color);
-    transition: all 0.3s ease;
+/* Cosmic Gradient Text */
+.cosmic-gradient-text {
+    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-secondary)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-.feature-card:hover .feature-icon {
-    background: var(--p-primary-color);
-    color: white;
-    transform: scale(1.1);
-}
-
-.feature-title {
-    color: white;
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-}
-
-.feature-text {
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.5;
-}
-
-/* CTA Section */
-.home-cta {
-    padding: 4rem 2rem 6rem;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.cta-card {
-    background: linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(236, 72, 153, 0.2));
-    border: 1px solid var(--p-primary-color);
-    border-radius: 1.5rem;
-}
-
-.cta-content {
-    text-align: center;
-    padding: 3rem;
-}
-
-.cta-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 1rem;
-}
-
-.cta-text {
-    font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 2rem;
-}
-
-.cta-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
+/* Background Section */
+.bg-cosmic-bg-secondary {
+    background-color: rgba(var(--cosmic-bg-secondary), 0.3);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .hero-title {
-        font-size: 2.5rem;
-    }
-
-    .hero-subtitle {
-        font-size: 1.1rem;
-    }
-
-    .hero-stats {
-        gap: 2rem;
-    }
-
-    .stat-value {
-        font-size: 2.5rem;
-    }
-
     .section-header {
         flex-direction: column;
         gap: 1rem;
         text-align: center;
     }
-
-    .section-title {
-        font-size: 2rem;
-    }
-
-    .posts-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .categories-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
-
-    .features-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .cta-content {
-        padding: 2rem;
-    }
-
-    .cta-title {
-        font-size: 1.5rem;
-    }
-
-    .cta-actions {
+    
+    .hero-actions {
         flex-direction: column;
         align-items: center;
     }
-}
-
-/* Dark mode adjustments */
-:global(.dark) .post-card {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-:global(.dark) .category-tile {
-    background: rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-:global(.dark) .feature-icon {
-    background: rgba(0, 0, 0, 0.3);
 }
 </style>

@@ -1,13 +1,18 @@
 <template>
-    <div class="cosmic-layout" :class="layoutClasses">
-        <Toast position="top-right" />
-        <CosmicBackground :variant="backgroundVariant" :animated="animated">
+    <v-app>
+        <div class="cosmic-layout" :class="layoutClasses">
+            <CosmicBackground :variant="backgroundVariant" :animated="animated">
             <!-- Header Section -->
             <header v-if="showHeader" class="cosmic-header">
                 <div class="cosmic-header-content">
                     <slot name="header">
                         <div class="cosmic-header-default">
-                            <h1 class="cosmic-title">{{ title }}</h1>
+                            <Link 
+                                :href="route('home')" 
+                                class="cosmic-brand-link"
+                            >
+                                <h1 class="cosmic-title">Shiny Starborne</h1>
+                            </Link>
                             <div class="cosmic-header-actions">
                                 <ThemeSwitcher />
                             </div>
@@ -37,14 +42,15 @@
             </footer>
         </CosmicBackground>
     </div>
+    </v-app>
 </template>
 
 <script setup>
 import { computed } from "vue"
+import { Link } from '@inertiajs/vue3'
 import { useTheme } from "@/composables/useTheme"
 import CosmicBackground from "./CosmicBackground.vue"
 import ThemeSwitcher from "./ThemeSwitcher.vue"
-import Toast from 'primevue/toast'
 
 // Props
 const props = defineProps({
@@ -104,7 +110,7 @@ const layoutClasses = computed(() => [
     position: relative;
     z-index: 20;
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgb(var(--cosmic-border));
 }
 
 .cosmic-header-content {
@@ -119,21 +125,30 @@ const layoutClasses = computed(() => [
     align-items: center;
 }
 
+.cosmic-brand-link {
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.cosmic-brand-link:hover {
+    transform: scale(1.05);
+}
+
 .cosmic-title {
     font-size: 1.875rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #a855f7, #3b82f6, #ec4899);
+    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-accent)));
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-size: 200% 200%;
     animation: cosmic-text-glow 3s ease-in-out infinite;
+    margin: 0;
 }
 
 .cosmic-layout-dark .cosmic-title {
-    color: white;
-    -webkit-text-fill-color: white;
-    text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+    filter: brightness(1.2);
 }
 
 .cosmic-header-actions {
@@ -160,7 +175,7 @@ const layoutClasses = computed(() => [
     position: relative;
     z-index: 20;
     backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgb(var(--cosmic-border));
     margin-top: auto;
 }
 
@@ -175,21 +190,16 @@ const layoutClasses = computed(() => [
 }
 
 .cosmic-footer-text {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgb(var(--cosmic-text-secondary));
     font-size: 0.875rem;
 }
 
-.cosmic-layout-light .cosmic-footer-text {
-    color: rgba(0, 0, 0, 0.6);
-}
+/* Removed - handled by CSS variables */
 
 /* Layout Variants */
-.cosmic-layout-hero .cosmic-header {
-    background: rgba(0, 0, 0, 0.1);
-}
-
+.cosmic-layout-hero .cosmic-header,
 .cosmic-layout-hero .cosmic-footer {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgb(var(--cosmic-bg) / 0.5);
 }
 
 .cosmic-layout-minimal .cosmic-header,
@@ -210,16 +220,9 @@ const layoutClasses = computed(() => [
 }
 
 /* Glass morphism effects */
-.cosmic-layout-dark .cosmic-header,
-.cosmic-layout-dark .cosmic-footer {
-    background: rgba(0, 0, 0, 0.2);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-.cosmic-layout-light .cosmic-header,
-.cosmic-layout-light .cosmic-footer {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(0, 0, 0, 0.1);
+.cosmic-header,
+.cosmic-footer {
+    background: rgb(var(--cosmic-bg) / 0.8);
 }
 
 /* Responsive Design */
