@@ -1,17 +1,12 @@
 <template>
     <Head :title="`${category.name} - Admin`" />
     
-    <CosmicLayout 
-        title="Category Details" 
-        background-variant="default"
-    >
+    <AdminLayout>
         <div class="show-category">
             <!-- Header -->
             <div class="category-header">
                 <div class="header-info">
-                    <h1 class="category-title">
-                        <span class="cosmic-gradient-text">{{ category.name }}</span>
-                    </h1>
+                    <h1 class="category-title">{{ category.name }}</h1>
                     <p class="category-subtitle" v-if="category.description">
                         {{ category.description }}
                     </p>
@@ -24,7 +19,6 @@
                         :href="route('admin.categories.edit', category.id)"
                         class="edit-btn"
                     >
-                        <i class="pi pi-pencil"></i>
                         Edit Category
                     </Link>
                     <Link 
@@ -196,12 +190,12 @@
                 </template>
             </Card>
         </div>
-    </CosmicLayout>
+    </AdminLayout>
 </template>
 
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
-import CosmicLayout from '@/Components/Cosmic/CosmicLayout.vue'
+import AdminLayout from '@/Components/Admin/AdminLayout.vue'
 import Card from 'primevue/card'
 import Badge from 'primevue/badge'
 

@@ -52,6 +52,17 @@
                             class="post-card-link"
                         >
                             <v-card class="post-card cosmic-card-hover h-100">
+                                <!-- Featured Image -->
+                                <div v-if="post.image" class="post-image-container">
+                                    <v-img
+                                        :src="post.image"
+                                        :alt="post.title"
+                                        height="200"
+                                        cover
+                                        class="post-featured-image"
+                                    />
+                                </div>
+                                
                                 <v-card-item>
                                     <div class="post-header">
                                         <div class="post-date">
@@ -231,6 +242,7 @@ const handlePageChange = (page) => {
 .post-card {
     height: 100%;
     transition: all 0.3s ease;
+    overflow: hidden;
 }
 
 .post-card-link {
@@ -238,6 +250,20 @@ const handlePageChange = (page) => {
     display: block;
     color: inherit;
     height: 100%;
+}
+
+/* Featured Image */
+.post-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.post-featured-image {
+    transition: transform 0.3s ease;
+}
+
+.post-card-link:hover .post-featured-image {
+    transform: scale(1.05);
 }
 
 .post-header {

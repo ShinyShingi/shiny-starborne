@@ -7,47 +7,55 @@
     >
         <v-container class="post-container" style="max-width: 900px;">
             <!-- Post Header -->
-            <header class="post-header text-center mb-12">
-                <div class="post-meta-top">
-                    <Link 
-                        :href="route('blog.category', post.category.slug)"
-                        class="text-decoration-none"
-                    >
-                        <v-chip 
-                            color="primary"
-                            size="large"
-                            prepend-icon="mdi-tag"
-                        >
-                            {{ post.category.name }}
-                        </v-chip>
-                    </Link>
+            <header class="post-header mb-6">
+                <!-- Title at the very top -->
+                <h1 class="post-title">{{ post.title }}</h1>
+                
+                <!-- One row with user, date, and category -->
+                <div class="post-meta-row">
+                    <div class="author-info">
+                        <v-avatar class="author-avatar" color="primary" size="32">
+                            <v-icon color="white">mdi-account</v-icon>
+                        </v-avatar>
+                        <span class="author-name">{{ post.user.name }}</span>
+                    </div>
                     <div class="post-date">
                         <v-icon size="small" class="mr-1">mdi-calendar</v-icon>
                         {{ formatDate(post.published_at) }}
                     </div>
-                </div>
-                
-                <h1 class="post-title">{{ post.title }}</h1>
-                
-                <div class="post-author-info">
-                    <v-avatar class="author-avatar" color="primary">
-                        <v-icon color="white">mdi-account</v-icon>
-                    </v-avatar>
-                    <div class="author-details">
-                        <div class="author-name">{{ post.user.name }}</div>
-                        <div class="author-role">Cosmic Explorer</div>
+                    <div class="post-category">
+                        <Link 
+                            :href="route('blog.category', post.category.slug)"
+                            class="text-decoration-none"
+                        >
+                            <v-chip 
+                                color="primary"
+                                size="small"
+                                prepend-icon="mdi-tag"
+                            >
+                                {{ post.category.name }}
+                            </v-chip>
+                        </Link>
                     </div>
                 </div>
             </header>
 
-            <!-- Post Content -->
-            <div class="post-content">
-                <v-card class="content-card mb-8">
-                    <v-card-text>
-                        <div class="prose" v-html="post.content"></div>
-                    </v-card-text>
-                </v-card>
+            <!-- Featured Image UNDER Title -->
+            <div v-if="post.image" class="post-featured-image-container mb-8">
+                <v-img
+                    :src="post.image"
+                    :alt="post.title"
+                    width="100%"
+                    class="post-hero-image"
+                />
             </div>
+
+            <!-- Post Content -->
+            <article class="post-content mb-8">
+                <div class="content-wrapper">
+                    <div class="prose wysiwyg-content" v-html="post.content"></div>
+                </div>
+            </article>
 
             <!-- Share Section -->
             <div class="post-share text-center mb-8">
@@ -119,6 +127,17 @@
                         lg="4"
                     >
                         <v-card class="related-card h-100">
+                            <!-- Related Post Image -->
+                            <div v-if="relatedPost.image" class="related-image-container">
+                                <v-img
+                                    :src="relatedPost.image"
+                                    :alt="relatedPost.title"
+                                    height="150"
+                                    cover
+                                    class="related-featured-image"
+                                />
+                            </div>
+                            
                             <v-card-title>
                                 <Link 
                                     :href="route('blog.show', relatedPost.slug)"
@@ -214,132 +233,295 @@ const shareOnFacebook = () => {
 
 <style scoped>
 /* Post Header */
-.post-meta-top {
+.post-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    flex-direction: column;
+}
+
+.post-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: rgb(var(--cosmic-text));
+    margin: 0 0 1.5rem 0;
+    line-height: 1.3;
+    text-align: center;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+.post-meta-row {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 2rem;
-    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    gap: 1rem;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.author-name {
+    font-weight: 600;
+    color: rgb(var(--cosmic-text));
+    font-size: 0.9rem;
 }
 
 .post-date {
     display: flex;
     align-items: center;
     color: rgb(var(--cosmic-text-secondary));
-    font-size: 0.9rem;
-}
-
-.post-title {
-    font-size: clamp(2.5rem, 5vw, 3.5rem);
-    font-weight: 800;
-    color: rgb(var(--cosmic-text));
-    margin-bottom: 2rem;
-    line-height: 1.2;
-}
-
-.post-author-info {
-    display: flex;
-    align-items: center;
+    font-size: 0.85rem;
+    flex: 1;
     justify-content: center;
-    gap: 1rem;
 }
 
-.author-avatar {
-    width: 50px;
-    height: 50px;
+.post-category {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
 }
 
-.author-details {
-    text-align: left;
+/* Featured Image */
+.post-featured-image-container {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
-.author-name {
-    font-weight: 600;
-    color: rgb(var(--cosmic-text));
-    font-size: 1.1rem;
+.post-hero-image {
+    width: 100% !important;
+    height: 100% !important;
+    transition: transform 0.3s ease;
 }
 
-.author-role {
-    color: rgb(var(--cosmic-text-secondary));
-    font-size: 0.9rem;
+.post-hero-image :deep(.v-img__img) {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 /* Post Content */
-.content-card {
-    /* Styles will come from global v-card rules */
+.post-content {
+    margin: 0 auto;
 }
 
-.prose {
+.content-wrapper {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* WYSIWYG Content Styling */
+.wysiwyg-content {
     color: rgb(var(--cosmic-text));
     line-height: 1.8;
     font-size: 1.1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+/* Headings */
+.wysiwyg-content h1,
+.wysiwyg-content h2,
+.wysiwyg-content h3,
+.wysiwyg-content h4,
+.wysiwyg-content h5,
+.wysiwyg-content h6 {
     color: rgb(var(--cosmic-text));
-    margin-top: 2rem;
-    margin-bottom: 1rem;
+    font-weight: bold;
+    margin: 2.5rem 0 1.5rem 0;
+    line-height: 1.3;
 }
 
-.prose h2 {
-    font-size: 2rem;
-    font-weight: 700;
-}
+.wysiwyg-content h1 { font-size: 2.5rem; }
+.wysiwyg-content h2 { font-size: 2rem; }
+.wysiwyg-content h3 { font-size: 1.75rem; }
+.wysiwyg-content h4 { font-size: 1.5rem; }
+.wysiwyg-content h5 { font-size: 1.25rem; }
+.wysiwyg-content h6 { font-size: 1.1rem; }
 
-.prose h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-.prose p {
+/* Paragraphs and text */
+.wysiwyg-content p {
     margin-bottom: 1.5rem;
+    text-align: left;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    padding: 0.2rem;
 }
 
-.prose ul, .prose ol {
-    margin-bottom: 1.5rem;
-    padding-left: 2rem;
+.wysiwyg-content strong {
+    font-weight: bold;
+    color: rgb(var(--cosmic-text));
 }
 
-.prose li {
-    margin-bottom: 0.5rem;
+.wysiwyg-content em {
+    font-style: italic;
 }
 
-.prose a {
-    color: rgb(var(--cosmic-primary));
+.wysiwyg-content u {
     text-decoration: underline;
 }
 
-.prose a:hover {
+.wysiwyg-content s {
+    text-decoration: line-through;
+}
+
+/* Lists */
+.wysiwyg-content ul,
+.wysiwyg-content ol {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+}
+
+.wysiwyg-content ul {
+    list-style-type: disc;
+}
+
+.wysiwyg-content ol {
+    list-style-type: decimal;
+}
+
+.wysiwyg-content li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.wysiwyg-content ul ul,
+.wysiwyg-content ol ol,
+.wysiwyg-content ul ol,
+.wysiwyg-content ol ul {
+    margin: 0.5rem 0;
+}
+
+/* Links */
+.wysiwyg-content a {
+    color: rgb(var(--cosmic-primary));
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.wysiwyg-content a:hover {
     color: rgb(var(--cosmic-accent));
 }
 
-.prose blockquote {
+/* Blockquotes */
+.wysiwyg-content blockquote {
     border-left: 4px solid rgb(var(--cosmic-primary));
-    padding-left: 1.5rem;
+    padding: 1.5rem 2rem;
     margin: 2rem 0;
+    background: rgba(147, 51, 234, 0.1);
+    border-radius: 0.5rem;
     font-style: italic;
     color: rgb(var(--cosmic-text-secondary));
 }
 
-.prose code {
-    background: rgba(var(--cosmic-bg-secondary), 0.5);
+.wysiwyg-content blockquote p {
+    margin-bottom: 1rem;
+}
+
+.wysiwyg-content blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+/* Code */
+.wysiwyg-content code {
+    background: rgba(0, 0, 0, 0.3);
+    color: #e2e8f0;
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
-    font-family: monospace;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 0.9em;
 }
 
-.prose pre {
-    background: rgba(var(--cosmic-bg-secondary), 0.8);
+.wysiwyg-content pre {
+    background: rgba(0, 0, 0, 0.6);
     padding: 1.5rem;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     overflow-x: auto;
-    margin-bottom: 1.5rem;
+    margin: 2rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.prose pre code {
+.wysiwyg-content pre code {
     background: transparent;
     padding: 0;
+    color: #e2e8f0;
+}
+
+/* Tables */
+.wysiwyg-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.wysiwyg-content th,
+.wysiwyg-content td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wysiwyg-content th {
+    background: rgba(147, 51, 234, 0.2);
+    font-weight: bold;
+    color: rgb(var(--cosmic-text));
+}
+
+.wysiwyg-content tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Images in content */
+.wysiwyg-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 2rem 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Horizontal rule */
+.wysiwyg-content hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, transparent, rgb(var(--cosmic-primary)), transparent);
+    margin: 3rem 0;
+}
+
+/* Text alignment classes */
+.wysiwyg-content .ql-align-center {
+    text-align: center;
+}
+
+.wysiwyg-content .ql-align-right {
+    text-align: right;
+}
+
+.wysiwyg-content .ql-align-left {
+    text-align: left;
+}
+
+.wysiwyg-content .ql-align-justify {
+    text-align: justify;
 }
 
 /* Share Section */
@@ -394,11 +576,25 @@ const shareOnFacebook = () => {
 .related-card {
     transition: all 0.3s ease;
     height: 100%;
+    overflow: hidden;
 }
 
 .related-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 15px 30px rgba(var(--cosmic-primary), 0.3);
+}
+
+.related-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.related-featured-image {
+    transition: transform 0.3s ease;
+}
+
+.related-card:hover .related-featured-image {
+    transform: scale(1.05);
 }
 
 .related-card-title {
@@ -448,17 +644,43 @@ const shareOnFacebook = () => {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .post-hero-image {
+        height: 250px !important;
+    }
+    
     .post-title {
         font-size: 2rem;
+        line-height: 1.2;
     }
 
-    .post-meta-top {
+    .post-meta-row {
         flex-direction: column;
         gap: 1rem;
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .author-info,
+    .post-date,
+    .post-category {
+        justify-content: center;
+    }
+    
+    .content-wrapper {
+        padding: 1.5rem;
     }
 
-    .prose {
+    .wysiwyg-content {
         font-size: 1rem;
+    }
+    
+    .wysiwyg-content h1 { font-size: 1.75rem; }
+    .wysiwyg-content h2 { font-size: 1.5rem; }
+    .wysiwyg-content h3 { font-size: 1.25rem; }
+    
+    .wysiwyg-content pre {
+        padding: 1rem;
+        overflow-x: auto;
     }
 
     .post-navigation {

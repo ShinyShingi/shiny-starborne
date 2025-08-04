@@ -1,20 +1,14 @@
 <template>
-    <Head title="Manage Posts - Admin" />
+    <Head title="Posts - Admin" />
     
-    <CosmicLayout 
-        title="Post Management" 
-        background-variant="default"
-    >
-        <div class="admin-posts">
+    <AdminLayout>
+        <div class="posts-index">
             <!-- Header -->
             <div class="posts-header">
                 <div class="header-info">
-                    <h1 class="posts-title">
-                        Manage 
-                        <span class="cosmic-gradient-text">Stellar Content</span>
-                    </h1>
+                    <h1 class="posts-title">Posts</h1>
                     <p class="posts-subtitle">
-                        Create, edit, and organize your cosmic archives
+                        Manage your blog posts
                     </p>
                 </div>
                 <div class="header-actions">
@@ -22,8 +16,7 @@
                         :href="route('admin.posts.create')"
                         class="create-btn"
                     >
-                        <i class="pi pi-plus"></i>
-                        Create Post
+                        + New Post
                     </Link>
                 </div>
             </div>
@@ -31,46 +24,24 @@
             <!-- Filters -->
             <Card class="filters-card">
                 <template #content>
-                    <div class="filters-grid">
-                        <div class="filter-group">
-                            <label class="filter-label">Search</label>
-                            <InputText
-                                v-model="filters.search"
-                                placeholder="Search posts..."
-                                class="filter-input"
-                                @input="debouncedSearch"
-                            />
-                        </div>
-                        <div class="filter-group">
-                            <label class="filter-label">Status</label>
-                            <Dropdown
-                                v-model="filters.status"
-                                :options="statusOptions"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="All Statuses"
-                                class="filter-dropdown"
-                                @change="applyFilters"
-                            />
-                        </div>
-                        <div class="filter-group">
-                            <label class="filter-label">Category</label>
-                            <Dropdown
-                                v-model="filters.category"
-                                :options="categoryOptions"
-                                option-label="name"
-                                option-value="id"
-                                placeholder="All Categories"
-                                class="filter-dropdown"
-                                @change="applyFilters"
-                            />
-                        </div>
-                        <div class="filter-actions">
+                    <div class="filters">
+                        <div class="search-group">
+                            <span class="p-input-icon-left">
+                                <i class="pi pi-search"></i>
+                                <InputText
+                                    v-model="searchQuery"
+                                    placeholder="Search posts..."
+                                    class="search-input"
+                                    @input="onSearch"
+                                />
+                            </span>
                             <Button 
-                                @click="clearFilters"
-                                label="Clear"
+                                v-if="searchQuery"
+                                @click="clearSearch"
                                 icon="pi pi-times"
-                                outlined
+                                text
+                                rounded
+                                severity="secondary"
                                 class="clear-btn"
                             />
                         </div>
@@ -78,78 +49,76 @@
                 </template>
             </Card>
 
-            <!-- Data Table -->
+            <!-- Posts Table -->
             <Card class="table-card">
                 <template #content>
                     <DataTable
                         :value="posts.data"
-                        :lazy="true"
                         :paginator="true"
                         :rows="posts.per_page"
-                        :totalRecords="posts.total"
-                        :loading="loading"
-                        :sortField="sortField"
-                        :sortOrder="sortOrder"
+                        :total-records="posts.total"
+                        :lazy="true"
                         @page="onPage"
                         @sort="onSort"
-                        :pt="{
-                            root: { class: 'cosmic-datatable' },
-                            header: { class: 'cosmic-datatable-header' },
-                            paginator: { class: 'cosmic-paginator' }
-                        }"
-                        class="cosmic-table"
-                        stripedRows
-                        responsiveLayout="scroll"
+                        sort-mode="single"
+                        class="cosmic-datatable"
+                        data-key="id"
+                        responsive-layout="scroll"
+                        :loading="loading"
                     >
-                        <Column field="title" header="Title" sortable class="title-column">
+                        <template #empty>
+                            <div class="empty-state">
+                                <i class="pi pi-file empty-icon"></i>
+                                <h3>No Posts Found</h3>
+                                <p>Create your first post to get started</p>
+                                <Link 
+                                    :href="route('admin.posts.create')"
+                                    class="empty-action-btn"
+                                >
+                                    <i class="pi pi-plus"></i>
+                                    Create Post
+                                </Link>
+                            </div>
+                        </template>
+
+                        <Column field="title" header="Title" sortable class="name-column">
                             <template #body="{ data }">
-                                <div class="post-title-cell">
-                                    <h4 class="post-title">{{ data.title }}</h4>
-                                    <p class="post-slug">{{ data.slug }}</p>
+                                <div class="post-name">
+                                    <strong>{{ data.title }}</strong>
+                                    <small class="post-slug">{{ data.slug }}</small>
                                 </div>
                             </template>
                         </Column>
 
-                        <Column field="status" header="Status" sortable>
+                        <Column field="status" header="Status" sortable class="status-column">
                             <template #body="{ data }">
                                 <Badge 
                                     :value="data.status" 
                                     :severity="data.status === 'published' ? 'success' : 'warning'"
-                                    class="status-badge"
                                 />
                             </template>
                         </Column>
 
-                        <Column field="category.name" header="Category" sortable>
+                        <Column field="category.name" header="Category" sortable class="category-column">
                             <template #body="{ data }">
-                                <div class="category-cell">
-                                    <i class="pi pi-tag"></i>
-                                    {{ data.category.name }}
+                                <div class="post-category">
+                                    {{ data.category?.name || 'No category' }}
                                 </div>
                             </template>
                         </Column>
 
-                        <Column field="user.name" header="Author" sortable>
+                        <Column field="user.name" header="Author" sortable class="author-column">
                             <template #body="{ data }">
-                                <div class="author-cell">
-                                    <i class="pi pi-user"></i>
+                                <div class="post-author">
                                     {{ data.user.name }}
                                 </div>
                             </template>
                         </Column>
 
-                        <Column field="created_at" header="Created" sortable>
+                        <Column field="created_at" header="Created" sortable class="date-column">
                             <template #body="{ data }">
-                                <div class="date-cell">
+                                <div class="date-info">
                                     {{ formatDate(data.created_at) }}
-                                </div>
-                            </template>
-                        </Column>
-
-                        <Column field="published_at" header="Published" sortable>
-                            <template #body="{ data }">
-                                <div class="date-cell">
-                                    {{ data.published_at ? formatDate(data.published_at) : '-' }}
                                 </div>
                             </template>
                         </Column>
@@ -157,32 +126,28 @@
                         <Column header="Actions" class="actions-column">
                             <template #body="{ data }">
                                 <div class="action-buttons">
-                                    <Button 
-                                        @click="viewPost(data)"
-                                        icon="pi pi-eye"
-                                        size="small"
-                                        severity="info"
-                                        outlined
-                                        rounded
-                                        v-tooltip="'View'"
-                                    />
-                                    <Button 
-                                        @click="editPost(data)"
-                                        icon="pi pi-pencil"
-                                        size="small"
-                                        severity="secondary"
-                                        outlined
-                                        rounded
-                                        v-tooltip="'Edit'"
-                                    />
+                                    <Link 
+                                        :href="route('admin.posts.show', data.id)"
+                                        class="action-btn view-btn"
+                                        v-tooltip="'View Post'"
+                                    >
+                                        <i class="pi pi-eye"></i>
+                                    </Link>
+                                    <Link 
+                                        :href="route('admin.posts.edit', data.id)"
+                                        class="action-btn edit-btn"
+                                        v-tooltip="'Edit Post'"
+                                    >
+                                        <i class="pi pi-pencil"></i>
+                                    </Link>
                                     <Button 
                                         @click="confirmDelete(data)"
                                         icon="pi pi-trash"
-                                        size="small"
                                         severity="danger"
-                                        outlined
+                                        text
                                         rounded
-                                        v-tooltip="'Delete'"
+                                        class="action-btn delete-btn"
+                                        v-tooltip="'Delete Post'"
                                     />
                                 </div>
                             </template>
@@ -202,7 +167,7 @@
                     <i class="pi pi-exclamation-triangle delete-icon"></i>
                     <div class="delete-message">
                         <h3>Delete Post</h3>
-                        <p>Are you sure you want to delete "<strong>{{ postToDelete?.title }}</strong>"?</p>
+                        <p v-if="postToDelete">Are you sure you want to delete "<strong>{{ postToDelete.title }}</strong>"?</p>
                         <p class="warning-text">This action cannot be undone.</p>
                     </div>
                 </div>
@@ -220,139 +185,80 @@
                             label="Delete" 
                             icon="pi pi-trash"
                             severity="danger"
-                            class="delete-btn"
+                            class="delete-btn-confirm"
                             :loading="deleting"
                         />
                     </div>
                 </template>
             </Dialog>
         </div>
-    </CosmicLayout>
+    </AdminLayout>
 </template>
 
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3'
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import { debounce } from 'lodash'
-import CosmicLayout from '@/Components/Cosmic/CosmicLayout.vue'
+import AdminLayout from '@/Components/Admin/AdminLayout.vue'
 import Card from 'primevue/card'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Badge from 'primevue/badge'
-import InputText from 'primevue/inputtext'
-import Dropdown from 'primevue/dropdown'
 import Dialog from 'primevue/dialog'
-import Tooltip from 'primevue/tooltip'
 
 const props = defineProps({
     posts: Object,
-    categories: Array,
     filters: Object
 })
 
 const toast = useToast()
 
 // State
+const searchQuery = ref(props.filters.search || '')
 const loading = ref(false)
 const deleting = ref(false)
 const deleteDialog = ref(false)
 const postToDelete = ref(null)
-const sortField = ref('created_at')
-const sortOrder = ref(-1)
-
-// Reactive filters
-const filters = reactive({
-    search: props.filters.search || '',
-    status: props.filters.status || null,
-    category: props.filters.category || null
-})
-
-// Options
-const statusOptions = [
-    { label: 'Published', value: 'published' },
-    { label: 'Draft', value: 'draft' }
-]
-
-const categoryOptions = computed(() => [
-    ...props.categories
-])
-
-// Debounced search
-const debouncedSearch = debounce(() => {
-    applyFilters()
-}, 500)
 
 // Methods
-const applyFilters = () => {
+const onSearch = () => {
     loading.value = true
-    
-    const params = {}
-    if (filters.search) params.search = filters.search
-    if (filters.status) params.status = filters.status
-    if (filters.category) params.category = filters.category
-
-    router.get(route('admin.posts.index'), params, {
+    router.get(route('admin.posts.index'), {
+        search: searchQuery.value
+    }, {
         preserveState: true,
-        preserveScroll: true,
         onFinish: () => loading.value = false
     })
 }
 
-const clearFilters = () => {
-    filters.search = ''
-    filters.status = null
-    filters.category = null
-    applyFilters()
+const clearSearch = () => {
+    searchQuery.value = ''
+    onSearch()
 }
 
 const onPage = (event) => {
     loading.value = true
-    const params = {
+    router.get(route('admin.posts.index'), {
         page: event.page + 1,
-        ...getCurrentFilters()
-    }
-    
-    router.get(route('admin.posts.index'), params, {
+        search: searchQuery.value
+    }, {
         preserveState: true,
-        preserveScroll: true,
         onFinish: () => loading.value = false
     })
 }
 
 const onSort = (event) => {
     loading.value = true
-    sortField.value = event.sortField
-    sortOrder.value = event.sortOrder
-    
-    const params = {
+    router.get(route('admin.posts.index'), {
         sortField: event.sortField,
         sortOrder: event.sortOrder,
-        ...getCurrentFilters()
-    }
-    
-    router.get(route('admin.posts.index'), params, {
+        search: searchQuery.value
+    }, {
         preserveState: true,
-        preserveScroll: true,
         onFinish: () => loading.value = false
     })
-}
-
-const getCurrentFilters = () => {
-    const params = {}
-    if (filters.search) params.search = filters.search
-    if (filters.status) params.status = filters.status
-    if (filters.category) params.category = filters.category
-    return params
-}
-
-const viewPost = (post) => {
-    window.open(route('blog.show', post.slug), '_blank')
-}
-
-const editPost = (post) => {
-    router.visit(route('admin.posts.edit', post.id))
 }
 
 const confirmDelete = (post) => {
@@ -361,6 +267,8 @@ const confirmDelete = (post) => {
 }
 
 const deletePost = () => {
+    if (!postToDelete.value) return
+    
     deleting.value = true
     
     router.delete(route('admin.posts.destroy', postToDelete.value.id), {
@@ -391,16 +299,14 @@ const formatDate = (dateString) => {
     return date.toLocaleDateString('en-US', { 
         year: 'numeric',
         month: 'short', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        day: 'numeric'
     })
 }
 </script>
 
 <style scoped>
-.admin-posts {
-    max-width: 1600px;
+.posts-index {
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
 }
@@ -450,8 +356,9 @@ const formatDate = (dateString) => {
     box-shadow: 0 8px 25px rgba(147, 51, 234, 0.4);
 }
 
-/* Filters */
-.filters-card {
+/* Cards */
+.filters-card,
+.table-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -459,122 +366,180 @@ const formatDate = (dateString) => {
     margin-bottom: 2rem;
 }
 
-.filters-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr auto;
-    gap: 1.5rem;
-    align-items: end;
+/* Filters */
+.filters {
+    padding: 1rem;
 }
 
-.filter-group {
+.search-group {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
+    max-width: 400px;
 }
 
-.filter-label {
-    color: white;
-    font-weight: 600;
-    font-size: 0.9rem;
+.search-input {
+    flex: 1;
 }
 
-.filter-input,
-.filter-dropdown {
-    width: 100%;
-}
-
-:deep(.filter-input) {
+:deep(.search-input) {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: white;
+    border-radius: 2rem;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
 }
 
-:deep(.filter-input::placeholder) {
+:deep(.search-input:focus) {
+    border-color: var(--p-primary-color);
+    box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.2);
+}
+
+:deep(.search-input::placeholder) {
     color: rgba(255, 255, 255, 0.5);
 }
 
-/* Table */
-.table-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 1rem;
+:deep(.p-input-icon-left > i) {
+    color: rgba(255, 255, 255, 0.6);
+    left: 1rem;
 }
 
+/* DataTable */
 :deep(.cosmic-datatable) {
     background: transparent;
+}
+
+:deep(.cosmic-datatable .p-datatable-header) {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
     color: white;
 }
 
 :deep(.cosmic-datatable .p-datatable-thead > tr > th) {
     background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    border: none;
     color: white;
     font-weight: 600;
+    padding: 1rem;
 }
 
 :deep(.cosmic-datatable .p-datatable-tbody > tr) {
     background: transparent;
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-:deep(.cosmic-datatable .p-datatable-tbody > tr:nth-child(even)) {
-    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
 }
 
 :deep(.cosmic-datatable .p-datatable-tbody > tr:hover) {
-    background: rgba(147, 51, 234, 0.2);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 :deep(.cosmic-datatable .p-datatable-tbody > tr > td) {
-    border-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
+    padding: 1rem;
 }
 
-/* Table Cells */
-.post-title-cell {
-    max-width: 300px;
-}
-
-.post-title {
+/* Table Columns */
+.post-name strong {
     color: white;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-    line-height: 1.3;
+    font-size: 1.1rem;
 }
 
 .post-slug {
+    display: block;
     color: rgba(255, 255, 255, 0.6);
-    font-size: 0.85rem;
     font-family: monospace;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
 }
 
-.category-cell,
-.author-cell {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.post-category,
+.post-author {
     color: rgba(255, 255, 255, 0.8);
 }
 
-.date-cell {
+.date-info {
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.9rem;
 }
 
-.status-badge {
-    font-size: 0.85rem;
-}
-
-/* Actions */
+/* Action Buttons */
 .action-buttons {
     display: flex;
     gap: 0.5rem;
 }
 
-/* Delete Dialog */
+.action-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.view-btn {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.edit-btn {
+    background: rgba(147, 51, 234, 0.2);
+    color: var(--p-primary-color);
+    border: 1px solid rgba(147, 51, 234, 0.3);
+}
+
+.delete-btn:not(:disabled) {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.action-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 2rem;
+}
+
+.empty-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--p-primary-color), var(--p-primary-600));
+    color: white;
+    text-decoration: none;
+    border-radius: 2rem;
+    font-weight: 600;
+}
+
+/* Dialog styles */
 .cosmic-dialog :deep(.p-dialog) {
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 1rem;
 }
@@ -624,20 +589,8 @@ const formatDate = (dateString) => {
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
-    .filters-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-    
-    .filter-actions {
-        grid-column: span 2;
-        justify-self: start;
-    }
-}
-
 @media (max-width: 768px) {
-    .admin-posts {
+    .posts-index {
         padding: 1rem;
     }
 
@@ -651,12 +604,12 @@ const formatDate = (dateString) => {
         font-size: 2rem;
     }
 
-    .filters-grid {
-        grid-template-columns: 1fr;
+    .search-group {
+        max-width: 100%;
     }
 
-    .filter-actions {
-        grid-column: span 1;
+    .action-buttons {
+        flex-direction: column;
     }
 }
 

@@ -319,6 +319,30 @@
     }
 }
 
+/* Admin Panel - Disable all animations */
+@layer components {
+    .admin-layout * {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    .admin-layout *:hover {
+        transform: none !important;
+    }
+    
+    /* Allow only theme toggle transitions */
+    .admin-layout .theme-toggle {
+        transition: background-color 0.2s, border-color 0.2s !important;
+    }
+    
+    /* Allow only button hover transitions */
+    .admin-layout .action-btn,
+    .admin-layout .nav-link,
+    .admin-layout .view-site-link {
+        transition: background-color 0.2s, border-color 0.2s, color 0.2s !important;
+    }
+}
+
 /* PrimeVue Theme Overrides */
 @layer utilities {
     /* Card Component */

@@ -87,9 +87,26 @@
                             class="post-card-link"
                         >
                             <v-card class="post-card cosmic-card-hover h-100">
+                                <!-- Featured Image -->
+                                <div v-if="post.image" class="post-image-container">
+                                    <v-img
+                                        :src="post.image"
+                                        :alt="post.title"
+                                        height="200"
+                                        cover
+                                        class="post-featured-image"
+                                    >
+                                        <div class="image-overlay">
+                                            <v-chip size="small" class="post-category-overlay">
+                                                {{ post.category.name }}
+                                            </v-chip>
+                                        </div>
+                                    </v-img>
+                                </div>
+                                
                                 <v-card-item>
-                                    <div class="post-header">
-                                        <v-chip size="small" class="post-category">
+                                    <div class="post-header" :class="{ 'no-image': !post.image }">
+                                        <v-chip v-if="!post.image" size="small" class="post-category">
                                             {{ post.category.name }}
                                         </v-chip>
                                         <div class="post-date">
@@ -289,6 +306,7 @@ const selectCategory = (categoryId) => {
 .post-card {
     height: 100%;
     transition: all 0.3s ease;
+    overflow: hidden;
 }
 
 .post-card-link {
@@ -298,10 +316,51 @@ const selectCategory = (categoryId) => {
     height: 100%;
 }
 
+/* Featured Image */
+.post-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.post-featured-image {
+    transition: transform 0.3s ease;
+}
+
+.post-card-link:hover .post-featured-image {
+    transform: scale(1.05);
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 50%);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 1rem;
+}
+
+.post-category-overlay {
+    background: linear-gradient(135deg, rgb(var(--cosmic-primary)), rgb(var(--cosmic-secondary)));
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
 .post-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.post-header.no-image {
+    justify-content: space-between;
+}
+
+.post-header:not(.no-image) {
+    justify-content: flex-end;
 }
 
 .post-category {

@@ -1,20 +1,14 @@
 <template>
     <Head :title="`Edit ${post.title} - Admin`" />
     
-    <CosmicLayout 
-        title="Edit Post" 
-        background-variant="default"
-    >
+    <AdminLayout>
         <div class="edit-post">
             <!-- Header -->
             <div class="post-header">
                 <div class="header-info">
-                    <h1 class="post-title">
-                        Edit 
-                        <span class="cosmic-gradient-text">Stellar Article</span>
-                    </h1>
+                    <h1 class="post-title">Edit Post</h1>
                     <p class="post-subtitle">
-                        Refine your cosmic masterpiece
+                        Update post information
                     </p>
                 </div>
                 <div class="header-actions">
@@ -140,20 +134,17 @@
                                     <i class="pi pi-align-left"></i>
                                     Content
                                 </label>
-                                <Textarea
-                                    id="content"
+                                <Editor
                                     v-model="form.content"
-                                    placeholder="Write your stellar content here..."
-                                    class="form-textarea"
+                                    editor-style="height: 400px"
+                                    class="form-editor"
                                     :class="{ 'p-invalid': errors.content }"
-                                    rows="15"
-                                    auto-resize
                                 />
                                 <small v-if="errors.content" class="error-message">
                                     {{ errors.content }}
                                 </small>
                                 <small class="form-help">
-                                    Supports HTML and Markdown
+                                    Use the rich text editor to format your content
                                 </small>
                             </div>
                         </div>
@@ -304,20 +295,20 @@
                 </template>
             </Dialog>
         </div>
-    </CosmicLayout>
+    </AdminLayout>
 </template>
 
 <script setup>
 import { Head, Link, useForm, router } from '@inertiajs/vue3'
 import { ref, computed, watch } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import CosmicLayout from '@/Components/Cosmic/CosmicLayout.vue'
+import AdminLayout from '@/Components/Admin/AdminLayout.vue'
 import ImageUpload from '@/Components/ImageUpload.vue'
 import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
 import Dropdown from 'primevue/dropdown'
 import Calendar from 'primevue/calendar'
-import Textarea from 'primevue/textarea'
+import Editor from 'primevue/editor'
 import Button from 'primevue/button'
 import Badge from 'primevue/badge'
 import Dialog from 'primevue/dialog'
@@ -634,7 +625,8 @@ const formatDate = (dateString) => {
 .form-input,
 .form-dropdown,
 .form-calendar,
-.form-textarea {
+.form-textarea,
+.form-editor {
     width: 100%;
 }
 
@@ -651,10 +643,40 @@ const formatDate = (dateString) => {
     transition: all 0.3s ease;
 }
 
+:deep(.form-editor .p-editor-container) {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+:deep(.form-editor .p-editor-toolbar) {
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+
+:deep(.form-editor .p-editor-content) {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0 0 0.75rem 0.75rem;
+}
+
+:deep(.form-editor .ql-editor) {
+    color: white;
+    font-size: 1rem;
+    line-height: 1.6;
+    min-height: 300px;
+}
+
 :deep(.form-input:focus),
 :deep(.form-dropdown .p-dropdown:focus),
 :deep(.form-calendar .p-inputtext:focus),
 :deep(.form-textarea:focus) {
+    border-color: var(--p-primary-color);
+    box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.2);
+}
+
+:deep(.form-editor .p-editor-container.p-focus) {
     border-color: var(--p-primary-color);
     box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.2);
 }

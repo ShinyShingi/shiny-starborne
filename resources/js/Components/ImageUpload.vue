@@ -69,7 +69,7 @@
             <div v-else class="upload-content">
                 <i class="pi pi-cloud-upload upload-icon"></i>
                 <h4>Drop image here or click to upload</h4>
-                <p>Supports: JPEG, PNG, GIF, WebP (max 2MB)</p>
+                <p>Supports: JPEG, PNG, GIF, WebP (max 5MB)</p>
             </div>
         </div>
 
@@ -97,6 +97,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
+import axios from 'axios'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 
@@ -184,9 +185,9 @@ const handleFile = async (file) => {
         return
     }
     
-    // Validate file size (2MB max)
-    if (file.size > 2 * 1024 * 1024) {
-        errorMessage.value = 'Image must be smaller than 2MB'
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+        errorMessage.value = 'Image must be smaller than 5MB'
         return
     }
     
@@ -208,26 +209,21 @@ const uploadFile = async (file) => {
     formData.append('image', file)
     
     try {
-        const response = await fetch(route('admin.images.upload'), {
-            method: 'POST',
-            body: formData,
+        const response = await axios.post(route('admin.images.upload'), formData, {
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                'X-Requested-With': 'XMLHttpRequest'
+                'Content-Type': 'multipart/form-data',
             }
         })
         
-        const data = await response.json()
-        
-        if (data.success) {
-            emit('update:modelValue', data.path)
+        if (response.data.success) {
+            emit('update:modelValue', response.data.path)
             previewUrl.value = null // Clear preview since we now have the actual image
         } else {
-            errorMessage.value = data.message || 'Failed to upload image'
+            errorMessage.value = response.data.message || 'Failed to upload image'
             previewUrl.value = null
         }
     } catch (error) {
-        errorMessage.value = 'Network error occurred while uploading'
+        errorMessage.value = error.response?.data?.message || 'Network error occurred while uploading'
         previewUrl.value = null
     } finally {
         uploading.value = false
@@ -246,27 +242,19 @@ const removeCurrentImage = async () => {
     if (!currentImageUrl.value) return
     
     try {
-        const response = await fetch(route('admin.images.delete'), {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({
+        const response = await axios.delete(route('admin.images.delete'), {
+            data: {
                 path: currentImageUrl.value
-            })
+            }
         })
         
-        const data = await response.json()
-        
-        if (data.success) {
+        if (response.data.success) {
             emit('update:modelValue', '')
         } else {
-            errorMessage.value = data.message || 'Failed to delete image'
+            errorMessage.value = response.data.message || 'Failed to delete image'
         }
     } catch (error) {
-        errorMessage.value = 'Network error occurred while deleting image'
+        errorMessage.value = error.response?.data?.message || 'Network error occurred while deleting image'
     }
 }
 </script>

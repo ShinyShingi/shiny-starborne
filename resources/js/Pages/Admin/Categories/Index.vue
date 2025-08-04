@@ -1,20 +1,14 @@
 <template>
     <Head title="Categories - Admin" />
     
-    <CosmicLayout 
-        title="Categories" 
-        background-variant="default"
-    >
+    <AdminLayout>
         <div class="categories-index">
             <!-- Header -->
             <div class="categories-header">
                 <div class="header-info">
-                    <h1 class="categories-title">
-                        Manage 
-                        <span class="cosmic-gradient-text">Categories</span>
-                    </h1>
+                    <h1 class="categories-title">Categories</h1>
                     <p class="categories-subtitle">
-                        Organize your cosmic content with stellar categories
+                        Manage your blog categories
                     </p>
                 </div>
                 <div class="header-actions">
@@ -22,8 +16,7 @@
                         :href="route('admin.categories.create')"
                         class="create-btn"
                     >
-                        <i class="pi pi-plus"></i>
-                        New Category
+                        + New Category
                     </Link>
                 </div>
             </div>
@@ -192,14 +185,14 @@
                 </template>
             </Dialog>
         </div>
-    </CosmicLayout>
+    </AdminLayout>
 </template>
 
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3'
 import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import CosmicLayout from '@/Components/Cosmic/CosmicLayout.vue'
+import AdminLayout from '@/Components/Admin/AdminLayout.vue'
 import Card from 'primevue/card'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'

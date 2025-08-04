@@ -1,20 +1,14 @@
 <template>
     <Head title="Create Category - Admin" />
     
-    <CosmicLayout 
-        title="Create Category" 
-        background-variant="default"
-    >
+    <AdminLayout>
         <div class="create-category">
             <!-- Header -->
             <div class="category-header">
                 <div class="header-info">
-                    <h1 class="category-title">
-                        Create New 
-                        <span class="cosmic-gradient-text">Category</span>
-                    </h1>
+                    <h1 class="category-title">Create Category</h1>
                     <p class="category-subtitle">
-                        Add a new category to organize your cosmic content
+                        Create a new blog category
                     </p>
                 </div>
                 <div class="header-actions">
@@ -22,8 +16,7 @@
                         :href="route('admin.categories.index')"
                         class="back-btn"
                     >
-                        <i class="pi pi-arrow-left"></i>
-                        Back to Categories
+                        ← Back to Categories
                     </Link>
                 </div>
             </div>
@@ -103,14 +96,14 @@
                 </template>
             </Card>
         </div>
-    </CosmicLayout>
+    </AdminLayout>
 </template>
 
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import CosmicLayout from '@/Components/Cosmic/CosmicLayout.vue'
+import AdminLayout from '@/Components/Admin/AdminLayout.vue'
 import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'

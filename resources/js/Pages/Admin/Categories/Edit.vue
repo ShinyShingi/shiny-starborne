@@ -1,20 +1,14 @@
 <template>
     <Head :title="`Edit ${category.name} - Admin`" />
     
-    <CosmicLayout 
-        title="Edit Category" 
-        background-variant="default"
-    >
+    <AdminLayout>
         <div class="edit-category">
             <!-- Header -->
             <div class="category-header">
                 <div class="header-info">
-                    <h1 class="category-title">
-                        Edit 
-                        <span class="cosmic-gradient-text">Category</span>
-                    </h1>
+                    <h1 class="category-title">Edit Category</h1>
                     <p class="category-subtitle">
-                        Update your category information
+                        Update category information
                     </p>
                 </div>
                 <div class="header-actions">
@@ -22,7 +16,6 @@
                         :href="route('admin.categories.show', category.id)"
                         class="view-btn"
                     >
-                        <i class="pi pi-eye"></i>
                         View Category
                     </Link>
                     <Link 
@@ -192,14 +185,14 @@
                 </template>
             </Dialog>
         </div>
-    </CosmicLayout>
+    </AdminLayout>
 </template>
 
 <script setup>
 import { Head, Link, useForm, router } from '@inertiajs/vue3'
 import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import CosmicLayout from '@/Components/Cosmic/CosmicLayout.vue'
+import AdminLayout from '@/Components/Admin/AdminLayout.vue'
 import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
