@@ -108,7 +108,7 @@
                             </v-card-title>
                             
                             <v-card-text>
-                                <p class="post-excerpt">{{ truncateText(post.content, 120) }}</p>
+                                <p class="post-excerpt">{{ post.clean_excerpt }}</p>
                                 <div class="post-footer mt-4">
                                     <span class="post-author">
                                         <v-icon size="small" class="mr-1">mdi-account</v-icon>

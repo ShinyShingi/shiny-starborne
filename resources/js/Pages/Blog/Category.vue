@@ -81,7 +81,7 @@
                                 </v-card-title>
                                 
                                 <v-card-text>
-                                    <p class="post-excerpt">{{ truncateText(post.content, 150) }}</p>
+                                    <p class="post-excerpt">{{ post.clean_excerpt }}</p>
                                     <div class="post-read-indicator mt-4">
                                         <v-icon size="small">mdi-arrow-right</v-icon>
                                     </div>
@@ -172,9 +172,25 @@ const formatDate = (dateString) => {
 }
 
 const truncateText = (text, length) => {
-    const stripped = text.replace(/<[^>]+>/g, '')
+    // Decode HTML entities multiple times to handle double-encoding
+    let decoded = text
+    
+    // Create a temporary element to decode HTML entities
+    const temp = document.createElement('div')
+    
+    // Decode up to 3 times to handle multiple levels of encoding
+    for (let i = 0; i < 3; i++) {
+        temp.innerHTML = decoded
+        const newDecoded = temp.textContent || temp.innerText || ''
+        if (newDecoded === decoded) break // No more decoding needed
+        decoded = newDecoded
+    }
+    
+    // Strip any remaining HTML tags
+    const stripped = decoded.replace(/<[^>]+>/g, '')
+    
     if (stripped.length <= length) return stripped
-    return stripped.substr(0, length).trim() + '...'
+    return stripped.substring(0, length).trim() + '...'
 }
 
 const handlePageChange = (page) => {

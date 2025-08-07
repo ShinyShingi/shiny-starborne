@@ -53,7 +53,7 @@
             <!-- Post Content -->
             <article class="post-content mb-8">
                 <div class="content-wrapper">
-                    <div class="prose wysiwyg-content" v-html="post.content"></div>
+                    <div class="prose wysiwyg-content" v-html="cleanContent(post.content)"></div>
                 </div>
             </article>
 
@@ -148,7 +148,7 @@
                             </v-card-title>
                             <v-card-text>
                                 <p class="related-excerpt">
-                                    {{ truncateText(relatedPost.content, 100) }}
+                                    {{ relatedPost.clean_excerpt }}
                                 </p>
                                 <div class="related-meta">
                                     <span class="related-date">
@@ -207,9 +207,42 @@ const formatDate = (dateString) => {
 }
 
 const truncateText = (text, length) => {
-    const stripped = text.replace(/<[^>]+>/g, '')
+    // Decode HTML entities multiple times to handle double-encoding
+    let decoded = text
+    
+    // Create a temporary element to decode HTML entities
+    const temp = document.createElement('div')
+    
+    // Decode up to 3 times to handle multiple levels of encoding
+    for (let i = 0; i < 3; i++) {
+        temp.innerHTML = decoded
+        const newDecoded = temp.textContent || temp.innerText || ''
+        if (newDecoded === decoded) break // No more decoding needed
+        decoded = newDecoded
+    }
+    
+    // Strip any remaining HTML tags
+    const stripped = decoded.replace(/<[^>]+>/g, '')
+    
     if (stripped.length <= length) return stripped
-    return stripped.substr(0, length).trim() + '...'
+    return stripped.substring(0, length).trim() + '...'
+}
+
+const cleanContent = (content) => {
+    // Replace &nbsp; with regular spaces
+    let cleaned = content.replace(/&nbsp;/g, ' ')
+    
+    // If content doesn't have proper paragraph tags, convert double line breaks to paragraphs
+    if (!cleaned.includes('<p>') && !cleaned.includes('<p ')) {
+        // Replace double line breaks with paragraph breaks
+        cleaned = cleaned.replace(/(<br\s*\/?>){2,}/gi, '</p><p>')
+        // Wrap in paragraph tags if not already wrapped
+        if (!cleaned.startsWith('<p>')) {
+            cleaned = '<p>' + cleaned + '</p>'
+        }
+    }
+    
+    return cleaned
 }
 
 const copyLink = () => {
@@ -332,9 +365,13 @@ const shareOnFacebook = () => {
     font-size: 1.1rem;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
+    word-break: normal;
+    hyphens: none;
+    white-space: normal;
 }
-
+.wysiwyg-content p {
+    margin-top: 0.2rem;
+}
 /* Headings */
 .wysiwyg-content h1,
 .wysiwyg-content h2,
@@ -357,11 +394,36 @@ const shareOnFacebook = () => {
 
 /* Paragraphs and text */
 .wysiwyg-content p {
+    margin-top: 1.25rem;
     margin-bottom: 1.5rem;
     text-align: left;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    padding: 0.2rem;
+    word-break: normal;
+    hyphens: none;
+    white-space: normal;
+}
+
+/* First paragraph should not have top margin */
+.wysiwyg-content p:first-child {
+    margin-top: 0;
+}
+
+/* Handle different WYSIWYG outputs */
+.wysiwyg-content > div {
+    margin-top: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.wysiwyg-content > div:first-child {
+    margin-top: 0;
+}
+
+/* Handle line breaks */
+.wysiwyg-content br + br {
+    display: block;
+    content: "";
+    margin-top: 1.25rem;
 }
 
 .wysiwyg-content strong {
@@ -672,6 +734,15 @@ const shareOnFacebook = () => {
 
     .wysiwyg-content {
         font-size: 1rem;
+        word-wrap: normal;
+        overflow-wrap: normal;
+        hyphens: none;
+        white-space: normal;
+    }
+    
+    .wysiwyg-content p {
+        margin-top: 1rem;
+        margin-bottom: 1.25rem;
     }
     
     .wysiwyg-content h1 { font-size: 1.75rem; }
